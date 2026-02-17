@@ -93,10 +93,21 @@ function initModal() {
   const modalClose = modal.querySelector('.modal-close');
   const modalBackdrop = modal.querySelector('.modal-backdrop');
 
-  // Open modal (but not when clicking the buy link)
+  const isMobile = window.matchMedia('(max-width: 599px)').matches;
+
   document.querySelectorAll('.collection-item').forEach(item => {
     item.addEventListener('click', (e) => {
       if (e.target.closest('.collection-buy')) return;
+
+      // Mobile: first tap shows buy button, second tap opens modal
+      if (isMobile && !item.classList.contains('tapped')) {
+        // Remove tapped from all other items
+        document.querySelectorAll('.collection-item.tapped').forEach(el => {
+          if (el !== item) el.classList.remove('tapped');
+        });
+        item.classList.toggle('tapped');
+        return;
+      }
 
       const theme = item.dataset.theme;
       const data = themeData[theme];
@@ -113,6 +124,17 @@ function initModal() {
       document.body.style.overflow = 'hidden';
     });
   });
+
+  // Mobile: remove tapped state when tapping outside collection
+  if (isMobile) {
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.collection-item')) {
+        document.querySelectorAll('.collection-item.tapped').forEach(el => {
+          el.classList.remove('tapped');
+        });
+      }
+    });
+  }
 
   // Close modal
   function closeModal() {

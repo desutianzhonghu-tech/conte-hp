@@ -1,0 +1,7 @@
+# 編集モード（公開しない）
+edit.html
+edit.js
+
+# macOS
+.DS_Store
+Thumbs.db

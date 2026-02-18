@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブログエディター — conte.jpeg</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400;500&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark-brown: #3d2f28;
+      --taupe: #6b5d54;
+      --cream: #faf9f7;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: var(--cream);
+      color: var(--dark-brown);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .editor-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.5rem;
+      background: var(--dark-brown);
+      color: var(--cream);
+    }
+
+    .editor-header h1 {
+      font-family: 'Shippori Mincho', serif;
+      font-weight: 400;
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+    }
+
+    .editor-header-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .editor-btn {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.75rem;
+      padding: 0.5em 1.2em;
+      border: 1px solid rgba(250, 249, 247, 0.3);
+      background: transparent;
+      color: var(--cream);
+      cursor: pointer;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+      transition: all 0.3s;
+    }
+
+    .editor-btn:hover {
+      background: rgba(250, 249, 247, 0.1);
+    }
+
+    .editor-btn--primary {
+      background: var(--cream);
+      color: var(--dark-brown);
+      border-color: var(--cream);
+    }
+
+    .editor-btn--primary:hover {
+      background: #e8e6e2;
+    }
+
+    /* Layout */
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 50px);
+    }
+
+    @media (max-width: 899px) {
+      .editor-layout {
+        grid-template-columns: 1fr;
+      }
+      .editor-preview {
+        display: none;
+      }
+      .editor-preview.show {
+        display: block;
+        position: fixed;
+        inset: 50px 0 0 0;
+        z-index: 90;
+        overflow-y: auto;
+      }
+    }
+
+    /* Edit side */
+    .editor-form {
+      padding: 2rem 1.5rem 4rem;
+      border-right: 1px solid rgba(61, 47, 40, 0.08);
+      overflow-y: auto;
+    }
+
+    .ef-group {
+      margin-bottom: 1.8rem;
+    }
+
+    .ef-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--taupe);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .ef-input {
+      width: 100%;
+      padding: 0.7em 0.8em;
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1rem;
+      color: var(--dark-brown);
+      background: #fff;
+      border: 1px solid #d5cfc9;
+      outline: none;
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s;
+    }
+
+    .ef-input:focus {
+      border-color: var(--taupe);
+    }
+
+    .ef-input-small {
+      font-size: 0.85rem;
+      padding: 0.5em 0.7em;
+    }
+
+    /* Cover photo */
+    .ef-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #eee;
+      border: 2px dashed #d5cfc9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .ef-cover:hover {
+      border-color: var(--taupe);
+    }
+
+    .ef-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ef-cover-placeholder {
+      font-size: 0.8rem;
+      color: var(--taupe);
+      text-align: center;
+    }
+
+    .ef-cover-change {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-size: 0.65rem;
+      padding: 0.3em 0.8em;
+      background: rgba(61, 47, 40, 0.8);
+      color: var(--cream);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .ef-cover:hover .ef-cover-change {
+      opacity: 1;
+    }
+
+    /* Text editor */
+    .ef-editor {
+      width: 100%;
+      min-height: 400px;
+      padding: 1.2em;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 2.2;
+      color: var(--dark-brown);
+      background: #fff;
+      border: 1px solid #d5cfc9;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .ef-editor:focus {
+      border-color: var(--taupe);
+    }
+
+    .ef-editor p {
+      margin-bottom: 1em;
+      text-indent: 1em;
+    }
+
+    .ef-toolbar {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 4px;
+      background: #fff;
+      border: 1px solid #d5cfc9;
+      border-bottom: none;
+      padding: 0.3rem;
+    }
+
+    .ef-tool {
+      padding: 0.3em 0.6em;
+      font-size: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--taupe);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background 0.15s;
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    .ef-tool:hover {
+      background: rgba(61, 47, 40, 0.06);
+      color: var(--dark-brown);
+    }
+
+    .ef-hint {
+      font-size: 0.65rem;
+      color: var(--taupe);
+      opacity: 0.6;
+      margin-top: 0.4rem;
+    }
+
+    /* Preview side */
+    .editor-preview {
+      background: var(--cream);
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .preview-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 4rem;
+    }
+
+    .preview-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: var(--taupe);
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    .preview-title {
+      font-family: 'Shippori Mincho', serif;
+      font-weight: 500;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      line-height: 1.9;
+      color: var(--dark-brown);
+      margin: 0.8rem 0 2rem;
+      text-align: center;
+    }
+
+    .preview-cover {
+      margin: 0 -1.5rem 2.5rem;
+    }
+
+    .preview-cover img {
+      width: 100%;
+      display: block;
+    }
+
+    .preview-body {
+      font-weight: 300;
+      font-size: 0.95rem;
+      line-height: 2.2;
+      color: var(--dark-brown);
+    }
+
+    .preview-body p {
+      margin-bottom: 1.8em;
+      text-indent: 1em;
+    }
+
+    .preview-label {
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--taupe);
+      opacity: 0.4;
+      padding: 1rem;
+      border-bottom: 1px solid rgba(61, 47, 40, 0.06);
+      margin-bottom: 1rem;
+    }
+
+    /* File name input */
+    .ef-filename {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ef-filename span {
+      font-size: 0.8rem;
+      color: var(--taupe);
+      white-space: nowrap;
+    }
+
+    .ef-filename input {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="editor-header">
+    <h1>哲学 — 記事を書く</h1>
+    <div class="editor-header-btns">
+      <button class="editor-btn" id="toggle-preview" type="button">プレビュー</button>
+      <button class="editor-btn" id="download-post" type="button">記事を保存</button>
+      <button class="editor-btn editor-btn--primary" id="download-all" type="button">記事 + 一覧を保存</button>
+    </div>
+  </header>
+
+  <div class="editor-layout">
+    <!-- Edit side -->
+    <div class="editor-form">
+
+      <div class="ef-group">
+        <label class="ef-label">ファイル名</label>
+        <div class="ef-filename">
+          <span>blog/</span>
+          <input class="ef-input ef-input-small" id="ef-filename" value="003" placeholder="003">
+          <span>.html</span>
+        </div>
+      </div>
+
+      <div class="ef-group">
+        <label class="ef-label">日付</label>
+        <input class="ef-input ef-input-small" id="ef-date" type="text" value="" placeholder="2026.02.18">
+      </div>
+
+      <div class="ef-group">
+        <label class="ef-label">タイトル</label>
+        <input class="ef-input" id="ef-title" type="text" placeholder="記事のタイトル">
+      </div>
+
+      <div class="ef-group">
+        <label class="ef-label">カバー写真</label>
+        <div class="ef-cover" id="ef-cover">
+          <span class="ef-cover-placeholder">クリックして写真を選択</span>
+          <button class="ef-cover-change" type="button">変更</button>
+        </div>
+        <input type="file" id="ef-cover-input" accept="image/*" style="display:none">
+      </div>
+
+      <div class="ef-group">
+        <label class="ef-label">本文</label>
+        <div class="ef-toolbar">
+          <button class="ef-tool" type="button" data-cmd="bold"><b>太字</b></button>
+          <button class="ef-tool" type="button" data-cmd="italic"><i>斜体</i></button>
+          <button class="ef-tool" type="button" data-cmd="insertImage">画像挿入</button>
+          <button class="ef-tool" type="button" data-cmd="formatBlock" data-val="blockquote">引用</button>
+          <button class="ef-tool" type="button" data-cmd="formatBlock" data-val="p">段落</button>
+        </div>
+        <div class="ef-editor" id="ef-body" contenteditable="true">
+          <p>ここに本文を書き始めてください。</p>
+          <p>Enter で段落を区切れます。</p>
+        </div>
+        <p class="ef-hint">段落ごとに自動で字下げされます。画像はドラッグ＆ドロップでも追加できます。</p>
+      </div>
+
+      <div class="ef-group">
+        <label class="ef-label">抜粋（一覧ページに表示）</label>
+        <input class="ef-input" id="ef-excerpt" type="text" placeholder="一覧に表示される短い説明文">
+      </div>
+
+    </div>
+
+    <!-- Preview side -->
+    <div class="editor-preview" id="preview-pane">
+      <div class="preview-label">プレビュー</div>
+      <div class="preview-inner">
+        <p class="preview-date" id="pv-date"></p>
+        <h1 class="preview-title" id="pv-title">タイトル</h1>
+        <div class="preview-cover" id="pv-cover" style="display:none">
+          <img src="" alt="" id="pv-cover-img">
+        </div>
+        <div class="preview-body" id="pv-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Elements ---
+    const elFilename = document.getElementById('ef-filename');
+    const elDate = document.getElementById('ef-date');
+    const elTitle = document.getElementById('ef-title');
+    const elCover = document.getElementById('ef-cover');
+    const elCoverInput = document.getElementById('ef-cover-input');
+    const elBody = document.getElementById('ef-body');
+    const elExcerpt = document.getElementById('ef-excerpt');
+
+    const pvDate = document.getElementById('pv-date');
+    const pvTitle = document.getElementById('pv-title');
+    const pvCover = document.getElementById('pv-cover');
+    const pvCoverImg = document.getElementById('pv-cover-img');
+    const pvBody = document.getElementById('pv-body');
+    const previewPane = document.getElementById('preview-pane');
+
+    let coverDataURL = '';
+
+    // --- Init date ---
+    const today = new Date();
+    elDate.value = today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
+
+    // --- Live preview sync ---
+    function syncPreview() {
+      pvDate.textContent = elDate.value;
+      pvTitle.textContent = elTitle.value || 'タイトル';
+      pvBody.innerHTML = elBody.innerHTML;
+    }
+
+    elDate.addEventListener('input', syncPreview);
+    elTitle.addEventListener('input', syncPreview);
+    elBody.addEventListener('input', syncPreview);
+
+    // Initial sync
+    syncPreview();
+
+    // --- Cover photo ---
+    elCover.addEventListener('click', () => elCoverInput.click());
+    elCoverInput.addEventListener('change', () => {
+      const file = elCoverInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        coverDataURL = e.target.result;
+        elCover.innerHTML = `<img src="${coverDataURL}" alt=""><button class="ef-cover-change" type="button">変更</button>`;
+        elCover.querySelector('.ef-cover-change').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          elCoverInput.click();
+        });
+        pvCover.style.display = 'block';
+        pvCoverImg.src = coverDataURL;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // --- Text toolbar ---
+    document.querySelectorAll('.ef-tool').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cmd = btn.dataset.cmd;
+        const val = btn.dataset.val || null;
+        if (cmd === 'insertImage') {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = () => {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              document.execCommand('insertHTML', false, `<img src="${ev.target.result}" style="width:100%;margin:1rem 0">`);
+              syncPreview();
+            };
+            reader.readAsDataURL(file);
+          };
+          input.click();
+        } else {
+          document.execCommand(cmd, false, val);
+        }
+        elBody.focus();
+        syncPreview();
+      });
+    });
+
+    // --- Drag & drop images ---
+    elBody.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type.startsWith('image/')) {
+        e.preventDefault();
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.execCommand('insertHTML', false, `<img src="${ev.target.result}" style="width:100%;margin:1rem 0">`);
+          syncPreview();
+        };
+        reader.readAsDataURL(files[0]);
+      }
+    });
+
+    elBody.addEventListener('dragover', (e) => e.preventDefault());
+
+    // --- Mobile preview toggle ---
+    document.getElementById('toggle-preview').addEventListener('click', () => {
+      previewPane.classList.toggle('show');
+      syncPreview();
+    });
+
+    // --- Generate blog post HTML ---
+    function generatePostHTML() {
+      const title = elTitle.value || '無題';
+      const date = elDate.value;
+      const body = elBody.innerHTML;
+
+      // Clean up body: remove contenteditable artifacts
+      const tmp = document.createElement('div');
+      tmp.innerHTML = body;
+      // Ensure paragraphs
+      tmp.querySelectorAll('div').forEach(div => {
+        const p = document.createElement('p');
+        p.innerHTML = div.innerHTML;
+        div.replaceWith(p);
+      });
+
+      return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} — conte.jpeg</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&family=Noto+Serif+JP:wght@200;300;400;500&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../blog.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5LB93BMVP"><\/script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-S5LB93BMVP');
+  <\/script>
+</head>
+<body>
+
+  <a href="../philosophy.html" class="blog-back">&larr; 哲学</a>
+
+  <article class="blog-article">
+    <header class="blog-header">
+      <time class="blog-date">${date}</time>
+      <h1 class="blog-title">${title}</h1>
+    </header>
+${coverDataURL ? `
+    <div class="blog-cover">
+      <img src="${coverDataURL}" alt="${title}">
+    </div>
+` : ''}
+    <div class="blog-body">
+      ${tmp.innerHTML}
+    </div>
+  </article>
+
+  <nav class="blog-nav">
+    <a href="../philosophy.html" class="btn btn--outline">一覧に戻る</a>
+  </nav>
+
+</body>
+</html>`;
+    }
+
+    // --- Generate card HTML for philosophy.html ---
+    function generateCardHTML() {
+      const filename = elFilename.value || '003';
+      const title = elTitle.value || '無題';
+      const date = elDate.value;
+      const excerpt = elExcerpt.value || title;
+      const imgSrc = coverDataURL || 'images/concept/concept-1.jpg';
+
+      return `    <a href="blog/${filename}.html" class="phil-card fade-in">
+      <div class="phil-card-image">
+        <img src="${imgSrc}" alt="${title}" loading="lazy">
+      </div>
+      <div class="phil-card-body">
+        <time class="phil-card-date">${date}</time>
+        <h2 class="phil-card-title">${title}</h2>
+        <p class="phil-card-excerpt">${excerpt}</p>
+      </div>
+    </a>`;
+    }
+
+    // --- Download helpers ---
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --- Download post only ---
+    document.getElementById('download-post').addEventListener('click', () => {
+      const filename = elFilename.value || '003';
+      downloadFile(generatePostHTML(), filename + '.html');
+      alert(`${filename}.html をダウンロードしました。\nblog/ フォルダに配置してください。`);
+    });
+
+    // --- Download post + show card snippet ---
+    document.getElementById('download-all').addEventListener('click', () => {
+      const filename = elFilename.value || '003';
+      downloadFile(generatePostHTML(), filename + '.html');
+
+      const card = generateCardHTML();
+      const msg = `${filename}.html をダウンロードしました。\nblog/ フォルダに配置してください。\n\n下記のコードを philosophy.html の\n<section class="phil-posts"> 内に追加してください：\n\n（クリップボードにコピーしました）`;
+
+      navigator.clipboard.writeText(card).then(() => {
+        alert(msg);
+      }).catch(() => {
+        // Fallback
+        prompt('下記をコピーして philosophy.html に追加:', card);
+      });
+    });
+  </script>
+
+</body>
+</html>

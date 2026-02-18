@@ -1,0 +1,145 @@
+/* Philosophy / Blog Listing */
+.page-back {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 100;
+  font-family: var(--font-en);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--taupe);
+  background: rgba(250, 249, 247, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0.5em 1em;
+  border-radius: 20px;
+  border: 1px solid rgba(61, 47, 40, 0.1);
+  transition: color 0.3s ease;
+}
+
+.page-back:hover {
+  color: var(--dark-brown);
+}
+
+.phil-hero {
+  padding: 8rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.phil-title {
+  font-family: 'Shippori Mincho', var(--font-ja);
+  font-weight: 400;
+  font-size: 2rem;
+  letter-spacing: 0.35em;
+  color: var(--dark-brown);
+  margin-bottom: 1rem;
+}
+
+.phil-lead {
+  font-weight: 300;
+  font-size: 0.9rem;
+  line-height: 2;
+  color: var(--taupe);
+}
+
+/* Post cards */
+.phil-posts {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.phil-card {
+  display: block;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.25, 0, 0.15, 1), box-shadow 0.4s ease;
+}
+
+.phil-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(61, 47, 40, 0.1);
+}
+
+.phil-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.phil-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0, 0.15, 1);
+}
+
+.phil-card:hover .phil-card-image img {
+  transform: scale(1.03);
+}
+
+.phil-card-body {
+  padding: 1.5rem 0.5rem;
+}
+
+.phil-card-date {
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--taupe);
+  opacity: 0.7;
+}
+
+.phil-card-title {
+  font-family: 'Shippori Mincho', var(--font-ja);
+  font-weight: 500;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  color: var(--dark-brown);
+  margin: 0.6rem 0;
+}
+
+.phil-card-excerpt {
+  font-weight: 300;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--taupe);
+}
+
+.phil-footer {
+  text-align: center;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Tablet+ */
+@media (min-width: 600px) {
+  .phil-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .phil-card-image {
+    aspect-ratio: 1;
+  }
+
+  .phil-card-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .phil-hero {
+    padding: 5rem 1.5rem 2rem;
+  }
+
+  .phil-title {
+    font-size: 1.6rem;
+  }
+}

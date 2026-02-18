@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — conte.jpeg</title>
+  <meta name="description" content="conte.jpeg へのお問い合わせ。商品やオーダーメイドに関するご質問はこちらから。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&family=Noto+Serif+JP:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="contact.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5LB93BMVP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-S5LB93BMVP');
+  </script>
+</head>
+<body>
+
+  <a href="index.html" class="page-back">&larr; Top</a>
+
+  <section class="contact-page">
+    <h1 class="contact-page-title">Contact</h1>
+    <p class="contact-page-lead">ご質問・ご相談はお気軽にどうぞ。</p>
+
+    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <div class="form-group">
+        <label for="contact-name">お名前</label>
+        <input type="text" id="contact-name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="contact-email">メールアドレス</label>
+        <input type="email" id="contact-email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="contact-subject">件名</label>
+        <select id="contact-subject" name="subject">
+          <option value="商品について">商品について</option>
+          <option value="オーダーメイドについて">オーダーメイドについて</option>
+          <option value="購入について">購入について</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="contact-message">メッセージ</label>
+        <textarea id="contact-message" name="message" rows="6" required></textarea>
+      </div>
+      <button type="submit" class="btn btn--primary btn--large">送信する</button>
+    </form>
+
+    <div class="contact-alt">
+      <p>InstagramのDMでもお気軽にご連絡ください。</p>
+      <a href="https://www.instagram.com/conte.jpeg/" class="btn btn--outline" target="_blank" rel="noopener">@conte.jpeg</a>
+    </div>
+  </section>
+
+  <footer class="contact-footer">
+    <a href="index.html" class="btn btn--outline">トップページへ戻る</a>
+  </footer>
+
+</body>
+</html>

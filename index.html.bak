@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>conte.jpeg — 身につける、自然。</title>
+  <meta name="description" content="自然界の有機的な造形を指先に宿す。3Dモデリングと鋳造技術が融合するシルバーリングブランド conte.jpeg｜珊瑚・溶岩・森など12テーマのオリジナルリングをオンラインで販売">
+  <meta name="keywords" content="conte.jpeg,シルバーリング,指輪,ジュエリー,有機的デザイン,3Dプリント,ハンドメイドリング,オーダーメイド指輪">
+  <link rel="canonical" href="https://desutianzhonghu-tech.github.io/conte-hp/">
+  <!-- OGP -->
+  <meta property="og:title" content="conte.jpeg — 身につける、自然。">
+  <meta property="og:description" content="自然界の有機的な造形を指先に宿す。3Dモデリングと鋳造技術が融合するシルバーリングブランド">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://desutianzhonghu-tech.github.io/conte-hp/">
+  <meta property="og:image" content="https://desutianzhonghu-tech.github.io/conte-hp/images/hero.jpg">
+  <meta property="og:site_name" content="conte.jpeg">
+  <meta property="og:locale" content="ja_JP">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="conte.jpeg — 身につける、自然。">
+  <meta name="twitter:description" content="自然界の有機的な造形を指先に宿す。シルバーリングブランド conte.jpeg">
+  <meta name="twitter:image" content="https://desutianzhonghu-tech.github.io/conte-hp/images/hero.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&family=Noto+Serif+JP:wght@200;300;400;500&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Old+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5LB93BMVP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-S5LB93BMVP');
+  </script>
+</head>
+<body>
+
+  <!-- Sidebar Toggle Button (always visible) -->
+  <button id="sidebar-toggle" class="sidebar-toggle" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+      <a href="#hero" class="sidebar-logo">conte.jpeg</a>
+      <div class="sidebar-links">
+        <a href="#collection">作品</a>
+        <a href="#story">寸劇</a>
+        <a href="#process">かたちになるまで</a>
+        <a href="#instagram">インスタグラム</a>
+        <a href="#shop">手にとる</a>
+      </div>
+      <div class="sidebar-links sidebar-links--sub">
+        <a href="philosophy.html">哲学</a>
+        <a href="gallery.html">ギャラリー</a>
+        <a href="contact.html">お問い合わせ</a>
+      </div>
+    </div>
+  </nav>
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-image">
+      <video autoplay muted loop playsinline src="images/hero-video.mp4" poster="images/hero.jpg"></video>
+    </div>
+    <div class="hero-overlay">
+      <div class="hero-logo">
+        <span class="logo-main">conte</span>
+        <span class="logo-sub">.jpeg</span>
+      </div>
+      <p class="hero-tagline" data-editable>身につける、自然。</p>
+    </div>
+    <a href="#collection" class="hero-cta">View Collection</a>
+    <div class="scroll-indicator">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- Collection -->
+  <section id="collection">
+    <h2 class="section-title fade-in">Collection</h2>
+    <p class="collection-subtitle fade-in" data-editable>すべてのリングはオンラインストアでご購入いただけます</p>
+    <div class="collection-grid">
+      <div class="collection-item" data-theme="coral">
+        <img class="collection-img-1" src="images/collection/coral.jpg" alt="珊瑚 / Coral" loading="lazy">
+        <img class="collection-img-2" src="images/collection/coral-2.jpg" alt="珊瑚 / Coral" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">珊瑚</span>
+          <span class="theme-name-en">Coral</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="bone">
+        <img class="collection-img-1" src="images/collection/bone.jpg" alt="骨 / Bone" loading="lazy">
+        <img class="collection-img-2" src="images/collection/bone-2.jpg" alt="骨 / Bone" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">骨</span>
+          <span class="theme-name-en">Bone</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="ivy">
+        <img class="collection-img-1" src="images/collection/ivy.jpg" alt="蔦 / Ivy" loading="lazy">
+        <img class="collection-img-2" src="images/collection/ivy-2.jpg" alt="蔦 / Ivy" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">蔦</span>
+          <span class="theme-name-en">Ivy</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="plant">
+        <img class="collection-img-1" src="images/collection/plant.jpg" alt="植物 / Plant" loading="lazy">
+        <img class="collection-img-2" src="images/collection/plant-2.jpg" alt="植物 / Plant" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">植物</span>
+          <span class="theme-name-en">Plant</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="lava">
+        <img class="collection-img-1" src="images/collection/lava.jpg" alt="溶岩 / Lava" loading="lazy">
+        <img class="collection-img-2" src="images/collection/lava-2.jpg" alt="溶岩 / Lava" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">溶岩</span>
+          <span class="theme-name-en">Lava</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="ocean">
+        <img class="collection-img-1" src="images/collection/ocean.jpg" alt="海 / Ocean" loading="lazy">
+        <img class="collection-img-2" src="images/collection/ocean-2.jpg" alt="海 / Ocean" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">海</span>
+          <span class="theme-name-en">Ocean</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="deep-sea">
+        <img class="collection-img-1" src="images/collection/deep-sea.jpg" alt="深海 / Deep Sea" loading="lazy">
+        <img class="collection-img-2" src="images/collection/deep-sea-2.jpg" alt="深海 / Deep Sea" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">深海</span>
+          <span class="theme-name-en">Deep Sea</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="geometric">
+        <img class="collection-img-1" src="images/collection/geometric.jpg" alt="幾何学 / Geometric" loading="lazy">
+        <img class="collection-img-2" src="images/collection/geometric-2.jpg" alt="幾何学 / Geometric" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">幾何学</span>
+          <span class="theme-name-en">Geometric</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="delicate">
+        <img class="collection-img-1" src="images/collection/delicate.jpg" alt="繊細 / Delicate" loading="lazy">
+        <img class="collection-img-2" src="images/collection/delicate-2.jpg" alt="繊細 / Delicate" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">繊細</span>
+          <span class="theme-name-en">Delicate</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="heavy">
+        <img class="collection-img-1" src="images/collection/heavy.jpg" alt="重厚 / Heavy" loading="lazy">
+        <img class="collection-img-2" src="images/collection/heavy-2.jpg" alt="重厚 / Heavy" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">重厚</span>
+          <span class="theme-name-en">Heavy</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="ancient">
+        <img class="collection-img-1" src="images/collection/ancient.jpg" alt="古代 / Ancient" loading="lazy">
+        <img class="collection-img-2" src="images/collection/ancient-2.jpg" alt="古代 / Ancient" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">古代</span>
+          <span class="theme-name-en">Ancient</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+      <div class="collection-item" data-theme="forest">
+        <img class="collection-img-1" src="images/collection/forest.jpg" alt="森 / Forest" loading="lazy">
+        <img class="collection-img-2" src="images/collection/forest-2.jpg" alt="森 / Forest" loading="lazy">
+        <div class="collection-item-overlay">
+          <span class="theme-name-ja">森</span>
+          <span class="theme-name-en">Forest</span>
+          <a href="https://conte.base.ec" class="collection-buy" target="_blank" rel="noopener">購入はこちら &rarr;</a>
+        </div>
+      </div>
+    </div>
+    <div class="collection-cta fade-in">
+      <a href="https://conte.base.ec" class="btn btn--primary btn--large" target="_blank" rel="noopener">Online Store</a>
+    </div>
+  </section>
+
+  <!-- Brand Story -->
+  <section id="story">
+    <h2 class="section-title fade-in">conte.jpeg</h2>
+    <div class="story-content">
+      <div class="story-lead fade-in">
+        <p class="story-quote fade-in" data-editable>「自然が作り出す造形を、そのまま身につけられたら」</p>
+      </div>
+      <div class="story-prose fade-in">
+        <p data-editable>ふとした疑問が、すべてのはじまりだった。</p>
+        <p data-editable>珊瑚の骨格、溶岩の表面、森の中で絡み合う枝——自然界には、人の手では決して描けない造形が溢れている。その美しさを、日常のなかで身につけられるものにしたい。そんな想いから、conte.jpegは生まれた。</p>
+        <p data-editable>独自のアルゴリズムが、自然の有機的なパターンを3Dモデルとして再現する。高精細な3Dプリンターが原型を出力し、ロストワックス鋳造でシルバーへと姿を変える。デジタルとアナログ、テクノロジーと手仕事。その境界を溶かすことで、conte.jpegのリングは生まれる。</p>
+        <p data-editable>アルゴリズムが生み出すフォルムは、毎回異なる。自然がそうであるように、二つとして同じものは存在しない。あなたの手に届くリングは、この世界にただ一つだけのもの。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section id="process">
+    <h2 class="section-title fade-in">かたちになるまで</h2>
+    <div class="process-steps">
+      <div class="process-step slide-left">
+        <div class="process-number">01</div>
+        <div class="process-image fade-in">
+          <img src="images/process/modeling.jpg" alt="3Dモデリング" loading="lazy">
+        </div>
+        <h3 data-editable>3D Modeling</h3>
+        <p data-editable>自然界の造形をアルゴリズムで再現。<br>一つひとつ異なる有機的なフォルムを生み出す。</p>
+      </div>
+      <div class="process-step slide-right">
+        <div class="process-number">02</div>
+        <div class="process-image fade-in">
+          <img src="images/process/printing.jpg" alt="3Dプリント" loading="lazy">
+        </div>
+        <h3 data-editable>3D Printing</h3>
+        <p data-editable>高精細な3Dプリンターで原型を出力。<br>デジタルの造形が物質として立ち現れる。</p>
+      </div>
+      <div class="process-step slide-left">
+        <div class="process-number">03</div>
+        <div class="process-image fade-in">
+          <img src="images/process/casting.jpg" alt="鋳造・仕上げ" loading="lazy">
+        </div>
+        <h3 data-editable>Casting &amp; Finishing</h3>
+        <p data-editable>ロストワックス鋳造でシルバーに。<br>職人の手で一点一点、丁寧に仕上げる。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider divider--subtle">
+    <svg viewBox="0 0 1440 50" preserveAspectRatio="none"><path d="M0,25 C480,50 960,0 1440,25 L1440,50 L0,50 Z" fill="var(--cream-dark)"/></svg>
+  </div>
+
+  <!-- Instagram -->
+  <section id="instagram">
+    <h2 class="section-title fade-in">Instagram</h2>
+    <div class="instagram-grid fade-in">
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-1.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-2.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-3.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-4.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-5.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-6.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-7.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-8.jpg" alt="Instagram post" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener" class="instagram-item">
+        <img src="images/instagram/insta-9.jpg" alt="Instagram post" loading="lazy">
+      </a>
+    </div>
+    <div class="instagram-cta fade-in">
+      <a href="https://www.instagram.com/conte.jpeg/" class="btn btn--outline" target="_blank" rel="noopener">@conte.jpeg をフォロー</a>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section id="shop">
+    <div class="shop-inner fade-in">
+      <h2 class="section-title">手にとる</h2>
+      <p class="shop-lead" data-editable>すべてのリングは、BASEオンラインストアでご購入いただけます。</p>
+      <a href="https://conte.base.ec" class="btn btn--primary btn--large" target="_blank" rel="noopener">Visit Store</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="footer-logo">
+      <span class="logo-main">conte</span>
+      <span class="logo-sub">.jpeg</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/conte.jpeg/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://conte.base.ec" target="_blank" rel="noopener">BASE Shop</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 conte.jpeg</p>
+  </footer>
+
+  <!-- Mobile sticky buy bar -->
+  <div id="sticky-buy" class="sticky-buy">
+    <a href="https://conte.base.ec" target="_blank" rel="noopener">Shop Now</a>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button class="modal-close" aria-label="閉じる">&times;</button>
+      <div class="modal-image">
+        <img src="" alt="">
+      </div>
+      <div class="modal-info">
+        <h3 class="modal-theme-ja"></h3>
+        <p class="modal-theme-en"></p>
+        <p class="modal-description"></p>
+        <a href="https://conte.base.ec" class="btn btn--primary" target="_blank" rel="noopener">BASEで見る</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "JewelryStore",
+    "name": "conte.jpeg",
+    "description": "自然界の有機的な造形を指先に宿す。3Dモデリングと鋳造技術が融合するシルバーリングブランド",
+    "url": "https://desutianzhonghu-tech.github.io/conte-hp/",
+    "image": "https://desutianzhonghu-tech.github.io/conte-hp/images/hero.jpg",
+    "sameAs": [
+      "https://www.instagram.com/conte.jpeg/",
+      "https://conte.base.ec"
+    ],
+    "makesOffer": {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "conte.jpeg シルバーリング",
+        "category": "ジュエリー・アクセサリー",
+        "material": "シルバー",
+        "brand": {
+          "@type": "Brand",
+          "name": "conte.jpeg"
+        }
+      }
+    }
+  }
+  </script>
+  <script src="script.js"></script>
+  <script src="edit.js"></script>
+</body>
+</html>

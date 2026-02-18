@@ -66,8 +66,9 @@ const themeData = {
   }
 };
 
-// --- Scroll fade-in with IntersectionObserver ---
-function initFadeIn() {
+// --- Scroll Animations ---
+function initScrollAnimations() {
+  // Fade-in, slide-left, slide-right, scale-up
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -80,7 +81,24 @@ function initFadeIn() {
     rootMargin: '0px 0px -50px 0px'
   });
 
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-in, .slide-left, .slide-right, .scale-up').forEach(el => {
+    observer.observe(el);
+  });
+
+
+  // Parallax on scroll
+  const parallaxEls = document.querySelectorAll('.parallax-img');
+  if (parallaxEls.length > 0) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      parallaxEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const offset = (center - window.innerHeight / 2) * 0.04;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }, { passive: true });
+  }
 }
 
 // --- Collection Modal ---
@@ -94,24 +112,59 @@ function initModal() {
   const modalBackdrop = modal.querySelector('.modal-backdrop');
 
   const isMobile = window.matchMedia('(max-width: 599px)').matches;
+  const allItems = document.querySelectorAll('.collection-item');
 
-  document.querySelectorAll('.collection-item').forEach(item => {
+  // Get theme data from themeData or fall back to DOM content
+  function getItemData(item) {
+    const theme = item.dataset.theme;
+    if (themeData[theme]) return themeData[theme];
+    const ja = item.querySelector('.theme-name-ja')?.textContent || '';
+    const en = item.querySelector('.theme-name-en')?.textContent || '';
+    const buyLink = item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+    return { ja, en, description: ja + ' / ' + en, buyLink };
+  }
+
+  function resetAllItems() {
+    allItems.forEach(el => {
+      el.classList.remove('tapped');
+      el.querySelector('.collection-img-1').style.opacity = '';
+      el.querySelector('.collection-img-2').style.opacity = '';
+      const ov = el.querySelector('.collection-tap-overlay');
+      if (ov) ov.remove();
+    });
+  }
+
+  allItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      if (e.target.closest('.collection-buy')) return;
+      if (e.target.closest('.tap-buy')) return;
 
-      // Mobile: first tap shows buy button, second tap opens modal
-      if (isMobile && !item.classList.contains('tapped')) {
-        // Remove tapped from all other items
-        document.querySelectorAll('.collection-item.tapped').forEach(el => {
-          if (el !== item) el.classList.remove('tapped');
-        });
-        item.classList.toggle('tapped');
-        return;
+      if (isMobile) {
+        const wasTapped = item.classList.contains('tapped');
+
+        // Reset all
+        resetAllItems();
+
+        if (!wasTapped) {
+          const data = getItemData(item);
+
+          // 1st tap: swap image + show name, short desc, buy
+          item.classList.add('tapped');
+          item.querySelector('.collection-img-1').style.opacity = '0';
+          item.querySelector('.collection-img-2').style.opacity = '1';
+
+          const buyHref = data.buyLink || item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+          const overlay = document.createElement('div');
+          overlay.className = 'collection-tap-overlay';
+          overlay.innerHTML =
+            '<span class="tap-name">' + data.ja + ' / ' + data.en + '</span>' +
+            '<a class="tap-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
+          item.appendChild(overlay);
+          return;
+        }
+        // 2nd tap: fall through to open modal
       }
 
-      const theme = item.dataset.theme;
-      const data = themeData[theme];
-      if (!data) return;
+      const data = getItemData(item);
 
       modalImg.src = item.querySelector('.collection-img-1').src;
       modalImg.alt = `${data.ja} / ${data.en}`;
@@ -125,13 +178,11 @@ function initModal() {
     });
   });
 
-  // Mobile: remove tapped state when tapping outside collection
+  // Mobile: tap outside to reset
   if (isMobile) {
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.collection-item')) {
-        document.querySelectorAll('.collection-item.tapped').forEach(el => {
-          el.classList.remove('tapped');
-        });
+        resetAllItems();
       }
     });
   }
@@ -222,10 +273,33 @@ function initSmoothScroll() {
   });
 }
 
+// --- Sticky Buy Bar (show after scrolling past hero) ---
+function initStickyBuy() {
+  const bar = document.getElementById('sticky-buy');
+  const collection = document.getElementById('collection');
+  if (!bar || !collection) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        bar.classList.add('visible');
+      } else {
+        // Hide only when scrolled back above collection
+        if (entry.boundingClientRect.top > 0) {
+          bar.classList.remove('visible');
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(collection);
+}
+
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
-  initFadeIn();
+  initScrollAnimations();
   initModal();
   initSmoothScroll();
+  initStickyBuy();
 });

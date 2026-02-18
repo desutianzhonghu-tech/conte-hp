@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://desutianzhonghu-tech.github.io/conte-hp/sitemap.xml

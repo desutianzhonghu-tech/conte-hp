@@ -68,12 +68,13 @@ const themeData = {
 
 // --- Scroll Animations ---
 function initScrollAnimations() {
-  // Fade-in, slide-left, slide-right, scale-up
+  // Fade-in, slide-left, slide-right, scale-up — reversible
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+      } else {
+        entry.target.classList.remove('visible');
       }
     });
   }, {
@@ -98,6 +99,94 @@ function initScrollAnimations() {
         el.style.transform = `translateY(${offset}px)`;
       });
     }, { passive: true });
+  }
+
+  // --- Mobile: Collection auto-fade on scroll — reversible ---
+  if (window.matchMedia('(max-width: 599px)').matches) {
+    const autoFadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const item = entry.target;
+        if (entry.isIntersecting) {
+          if (!item.classList.contains('auto-revealed')) {
+            item._autoTimer = setTimeout(() => {
+              item.classList.add('auto-revealed');
+              const img1 = item.querySelector('.collection-img-1');
+              const img2 = item.querySelector('.collection-img-2');
+              if (img1) img1.style.opacity = '0';
+              if (img2) img2.style.opacity = '1';
+
+              const nameJa = item.querySelector('.theme-name-ja')?.textContent || '';
+              const nameEn = item.querySelector('.theme-name-en')?.textContent || '';
+              const buyHref = item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+              const overlay = document.createElement('div');
+              overlay.className = 'collection-auto-overlay';
+              overlay.innerHTML =
+                '<span class="auto-name">' + nameJa + ' / ' + nameEn + '</span>' +
+                '<a class="auto-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
+              item.appendChild(overlay);
+            }, 800);
+          }
+        } else {
+          // Reverse: reset to original state
+          clearTimeout(item._autoTimer);
+          if (item.classList.contains('auto-revealed')) {
+            item.classList.remove('auto-revealed');
+            const img1 = item.querySelector('.collection-img-1');
+            const img2 = item.querySelector('.collection-img-2');
+            if (img1) img1.style.opacity = '';
+            if (img2) img2.style.opacity = '';
+            const overlay = item.querySelector('.collection-auto-overlay');
+            if (overlay) overlay.remove();
+          }
+        }
+      });
+    }, {
+      threshold: 0.6
+    });
+
+    document.querySelectorAll('.collection-item').forEach(item => {
+      autoFadeObserver.observe(item);
+    });
+  }
+
+  // --- Story paragraphs: staggered fade-in — reversible ---
+  const storyParagraphs = document.querySelectorAll('.story-prose p');
+  if (storyParagraphs.length > 0) {
+    const storyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('story-visible');
+        } else {
+          entry.target.classList.remove('story-visible');
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '0px 0px -30px 0px' });
+
+    storyParagraphs.forEach((p, i) => {
+      p.classList.add('story-animate');
+      p.style.transitionDelay = (i * 0.15) + 's';
+      storyObserver.observe(p);
+    });
+  }
+
+  // --- Process steps: staggered reveal — reversible ---
+  const processSteps = document.querySelectorAll('.process-step');
+  if (processSteps.length > 0) {
+    const processObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('process-visible');
+        } else {
+          entry.target.classList.remove('process-visible');
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '0px 0px -40px 0px' });
+
+    processSteps.forEach((step, i) => {
+      step.classList.add('process-animate');
+      step.style.transitionDelay = (i * 0.25) + 's';
+      processObserver.observe(step);
+    });
   }
 }
 
@@ -136,9 +225,12 @@ function initModal() {
 
   allItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      if (e.target.closest('.tap-buy')) return;
+      if (e.target.closest('.tap-buy') || e.target.closest('.auto-buy')) return;
 
       if (isMobile) {
+        // Already auto-revealed: skip tap overlay logic
+        if (item.classList.contains('auto-revealed')) return;
+
         const wasTapped = item.classList.contains('tapped');
 
         // Reset all

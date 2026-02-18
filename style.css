@@ -193,6 +193,51 @@ a {
   transition-delay: calc(var(--item-index, 0) * 0.08s);
 }
 
+/* --- Collection auto-reveal overlay (mobile) --- */
+.collection-auto-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1.2rem 0.8rem 0.8rem;
+  background: linear-gradient(to top, rgba(61,47,40,0.85) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  animation: autoOverlayIn 0.8s ease both;
+}
+
+.collection-auto-overlay .auto-name {
+  font-family: var(--font-ja);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #faf9f7;
+  letter-spacing: 0.06em;
+}
+
+.collection-auto-overlay .auto-buy {
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  color: rgba(250,249,247,0.7);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+@keyframes autoOverlayIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Story paragraphs scroll animation --- */
+.story-animate {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.story-animate.story-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* --- Section Title --- */
 .section-title {
   font-family: 'Shippori Mincho', var(--font-ja);
@@ -987,12 +1032,25 @@ a {
   padding: 5rem 1.5rem;
   max-width: 800px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .process-steps {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0;
+}
+
+/* Connecting vertical line */
+.process-steps::before {
+  content: '';
+  position: absolute;
+  left: 60px;
+  top: 2.5rem;
+  bottom: 2.5rem;
+  width: 1px;
+  background: rgba(61, 47, 40, 0.12);
 }
 
 .process-step {
@@ -1001,8 +1059,7 @@ a {
   align-items: center;
   gap: 1.5rem;
   text-align: left;
-  padding: 2rem 0;
-  border-bottom: 1px solid rgba(61, 47, 40, 0.08);
+  padding: 2.5rem 0;
 }
 
 .process-step:last-child {
@@ -1011,7 +1068,7 @@ a {
 
 .process-number {
   position: absolute;
-  top: 1.8rem;
+  top: 2.2rem;
   left: 0;
   font-family: var(--font-en);
   font-size: 0.7rem;
@@ -1025,7 +1082,7 @@ a {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .process-image img {
@@ -1050,27 +1107,110 @@ a {
   line-height: 2;
 }
 
+/* --- Process scroll animations --- */
+.process-animate {
+  opacity: 0;
+}
+
+/* Odd steps slide from left */
+.process-step:nth-child(odd).process-animate {
+  transform: translateX(-40px);
+}
+
+/* Even steps slide from right */
+.process-step:nth-child(even).process-animate {
+  transform: translateX(40px);
+}
+
+.process-animate {
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.process-animate.process-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Photo: rotate + scale in */
+.process-animate .process-image {
+  transform: rotate(-15deg) scale(0.7);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+  transition-delay: 0.2s;
+}
+
+.process-animate.process-visible .process-image {
+  transform: rotate(0deg) scale(1);
+  opacity: 1;
+}
+
+/* Text: stagger in */
+.process-animate .process-text h3 {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: 0.4s;
+}
+
+.process-animate .process-text p {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: 0.55s;
+}
+
+.process-animate.process-visible .process-text h3,
+.process-animate.process-visible .process-text p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Number: pop in */
+.process-animate .process-number {
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: 0.1s;
+}
+
+.process-animate.process-visible .process-number {
+  opacity: 0.5;
+  transform: scale(1);
+}
+
+/* Pulse ring after reveal */
+.process-animate.process-visible .process-image {
+  animation: pulse-ring 2s ease-out 1s 1;
+}
+
 @media (max-width: 599px) {
   #process {
-    padding: 3.5rem 1.5rem;
+    padding: 3rem 1.2rem;
+  }
+
+  .process-steps::before {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 3rem;
+    bottom: 3rem;
   }
 
   .process-step {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 0.8rem;
-    padding: 2rem 0;
+    gap: 0.7rem;
+    padding: 2.5rem 0;
   }
 
   .process-number {
     position: static;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.1rem;
   }
 
   .process-image {
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
   }
 
   .process-step h3 {
@@ -1081,7 +1221,17 @@ a {
   .process-step p {
     font-size: 0.75rem;
     line-height: 1.9;
-    max-width: 280px;
+    max-width: 260px;
+  }
+
+  /* Mobile: all slide up instead of left/right */
+  .process-step:nth-child(odd).process-animate,
+  .process-step:nth-child(even).process-animate {
+    transform: translateX(0) translateY(30px);
+  }
+
+  .process-animate .process-image {
+    transform: rotate(-10deg) scale(0.75);
   }
 }
 

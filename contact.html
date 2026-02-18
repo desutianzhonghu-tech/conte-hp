@@ -26,30 +26,60 @@
     <h1 class="contact-page-title">Contact</h1>
     <p class="contact-page-lead">ご質問・ご相談はお気軽にどうぞ。</p>
 
-    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <form class="contact-form" id="contact-form">
       <div class="form-group">
         <label for="contact-name">お名前</label>
-        <input type="text" id="contact-name" name="name" required>
+        <input type="text" id="contact-name" required>
       </div>
       <div class="form-group">
         <label for="contact-email">メールアドレス</label>
-        <input type="email" id="contact-email" name="email" required>
+        <input type="email" id="contact-email" required>
       </div>
       <div class="form-group">
         <label for="contact-subject">件名</label>
-        <select id="contact-subject" name="subject">
+        <select id="contact-subject">
           <option value="商品について">商品について</option>
-          <option value="オーダーメイドについて">オーダーメイドについて</option>
           <option value="購入について">購入について</option>
           <option value="その他">その他</option>
         </select>
       </div>
       <div class="form-group">
         <label for="contact-message">メッセージ</label>
-        <textarea id="contact-message" name="message" rows="6" required></textarea>
+        <textarea id="contact-message" rows="6" required></textarea>
       </div>
       <button type="submit" class="btn btn--primary btn--large">送信する</button>
     </form>
+    <script>
+      document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = '送信中…';
+
+        const data = new URLSearchParams();
+        data.append('entry.1648180333', document.getElementById('contact-name').value);
+        data.append('entry.1960909964', document.getElementById('contact-email').value);
+        data.append('entry.1238617230', document.getElementById('contact-subject').value);
+        data.append('entry.1979254260', document.getElementById('contact-message').value);
+
+        fetch('https://docs.google.com/forms/d/e/1FAIpQLSepsQq1sJV6nhL_BGnt4zaYABZkRDnwPO6ooCG2oPAqengVmA/formResponse', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: data.toString()
+        }).then(function() {
+          form.reset();
+          btn.disabled = false;
+          btn.textContent = '送信する';
+          alert('送信しました。ありがとうございます。');
+        }).catch(function() {
+          btn.disabled = false;
+          btn.textContent = '送信する';
+          alert('送信しました。ありがとうございます。');
+        });
+      });
+    </script>
 
     <div class="contact-alt">
       <p>InstagramのDMでもお気軽にご連絡ください。</p>

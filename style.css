@@ -214,11 +214,22 @@ a {
 }
 
 .collection-auto-overlay .auto-buy {
+  display: inline-block;
   font-family: var(--font-en);
-  font-size: 0.65rem;
-  color: rgba(250,249,247,0.7);
+  font-size: 0.6rem;
+  color: #faf9f7;
   text-decoration: none;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  padding: 0.35em 1em;
+  border: 1px solid rgba(250,249,247,0.5);
+  border-radius: 50px;
+  margin-top: 0.2rem;
+  align-self: flex-start;
+  transition: background 0.2s;
+}
+
+.collection-auto-overlay .auto-buy:active {
+  background: rgba(250,249,247,0.15);
 }
 
 @keyframes autoOverlayIn {

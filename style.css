@@ -251,6 +251,34 @@ body.divider-fade .divider--subtle::before {
   body.divider-fade .section-divider { height: 80px; }
 }
 
+/* --- Divider Style: Gentle Wave --- */
+body.divider-gentle .section-divider svg { display: none; }
+body.divider-gentle .section-divider {
+  height: 80px;
+  overflow: visible;
+}
+body.divider-gentle .section-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  pointer-events: none;
+}
+body.divider-gentle .divider--subtle::before {
+  background: var(--cream-dark);
+  clip-path: polygon(
+    0% 55%, 5% 50%, 10% 46%, 15% 43%, 20% 42%, 25% 43%,
+    30% 46%, 35% 50%, 40% 53%, 45% 55%, 50% 55%,
+    55% 53%, 60% 50%, 65% 46%, 70% 43%, 75% 42%,
+    80% 43%, 85% 46%, 90% 50%, 95% 53%, 100% 55%,
+    100% 100%, 0% 100%
+  );
+}
+
+@media (max-width: 599px) {
+  body.divider-gentle .section-divider { height: 55px; }
+}
+
 /* --- Scroll Animations --- */
 .fade-in {
   opacity: 0;
@@ -890,6 +918,28 @@ body.divider-fade #story::after {
   clip-path: none;
   height: 120px;
   background: linear-gradient(to bottom, var(--dark-brown), var(--cream));
+}
+
+/* Gentle wave */
+body.divider-gentle #story::before {
+  height: 80px;
+  clip-path: polygon(
+    0% 55%, 5% 50%, 10% 46%, 15% 43%, 20% 42%, 25% 43%,
+    30% 46%, 35% 50%, 40% 53%, 45% 55%, 50% 55%,
+    55% 53%, 60% 50%, 65% 46%, 70% 43%, 75% 42%,
+    80% 43%, 85% 46%, 90% 50%, 95% 53%, 100% 55%,
+    100% 0%, 0% 0%
+  );
+}
+body.divider-gentle #story::after {
+  height: 80px;
+  clip-path: polygon(
+    0% 45%, 5% 50%, 10% 54%, 15% 57%, 20% 58%, 25% 57%,
+    30% 54%, 35% 50%, 40% 47%, 45% 45%, 50% 45%,
+    55% 47%, 60% 50%, 65% 54%, 70% 57%, 75% 58%,
+    80% 57%, 85% 54%, 90% 50%, 95% 47%, 100% 45%,
+    100% 100%, 0% 100%
+  );
 }
 
 #collection .section-title {
@@ -1641,6 +1691,17 @@ body.divider-fade #footer::before {
   clip-path: none;
   height: 120px;
   background: linear-gradient(to bottom, var(--cream), var(--dark-brown));
+}
+
+body.divider-gentle #footer::before {
+  height: 80px;
+  clip-path: polygon(
+    0% 55%, 5% 50%, 10% 46%, 15% 43%, 20% 42%, 25% 43%,
+    30% 46%, 35% 50%, 40% 53%, 45% 55%, 50% 55%,
+    55% 53%, 60% 50%, 65% 46%, 70% 43%, 75% 42%,
+    80% 43%, 85% 46%, 90% 50%, 95% 53%, 100% 55%,
+    100% 0%, 0% 0%
+  );
 }
 
 .footer-logo {

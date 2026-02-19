@@ -107,6 +107,150 @@ a {
   }
 }
 
+/* --- Divider Style: Layered Waves --- */
+body.divider-layered .section-divider svg { display: none; }
+body.divider-layered .section-divider {
+  height: 90px;
+  overflow: visible;
+}
+body.divider-layered .section-divider::before,
+body.divider-layered .section-divider::after {
+  content: '';
+  position: absolute;
+  left: -5%; right: -5%;
+  bottom: 0;
+  height: 100%;
+  pointer-events: none;
+}
+body.divider-layered .divider--subtle::before {
+  background: var(--cream-dark);
+  opacity: 0.4;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: scaleX(1.1) translateY(15%);
+}
+body.divider-layered .divider--subtle::after {
+  background: var(--cream-dark);
+  opacity: 0.7;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: scaleX(0.95) translateY(5%);
+}
+
+@media (max-width: 599px) {
+  body.divider-layered .section-divider { height: 60px; }
+}
+
+/* --- Divider Style: Diagonal --- */
+body.divider-diagonal .section-divider svg { display: none; }
+body.divider-diagonal .section-divider {
+  height: 80px;
+  overflow: visible;
+}
+body.divider-diagonal .section-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  pointer-events: none;
+}
+body.divider-diagonal .divider--subtle::before {
+  background: var(--cream);
+  clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 100%);
+}
+
+@media (max-width: 599px) {
+  body.divider-diagonal .section-divider { height: 50px; }
+}
+
+/* --- Divider Style: Organic Blob --- */
+body.divider-organic .section-divider svg { display: none; }
+body.divider-organic .section-divider {
+  height: 100px;
+  overflow: visible;
+}
+body.divider-organic .section-divider::before {
+  content: '';
+  position: absolute;
+  left: -2%; right: -2%;
+  top: 0; bottom: 0;
+  pointer-events: none;
+}
+body.divider-organic .divider--subtle::before {
+  background: var(--cream-dark);
+  clip-path: polygon(0% 20%, 8% 55%, 17% 25%, 25% 65%, 33% 30%, 42% 60%, 50% 15%, 58% 55%, 67% 25%, 75% 60%, 83% 20%, 92% 50%, 100% 15%, 100% 100%, 0% 100%);
+}
+
+@media (max-width: 599px) {
+  body.divider-organic .section-divider { height: 60px; }
+}
+
+/* --- Divider Style: Soft Arc --- */
+body.divider-arc .section-divider svg { display: none; }
+body.divider-arc .section-divider {
+  height: 120px;
+  overflow: visible;
+}
+body.divider-arc .section-divider::before {
+  content: '';
+  position: absolute;
+  left: -10%; right: -10%;
+  bottom: 0;
+  height: 100%;
+  pointer-events: none;
+}
+body.divider-arc .divider--subtle::before {
+  background: var(--cream-dark);
+  border-radius: 50%;
+  transform: scaleX(1.2) translateY(50%);
+}
+
+@media (max-width: 599px) {
+  body.divider-arc .section-divider { height: 80px; }
+}
+
+/* --- Divider Style: Mountain Silhouette --- */
+body.divider-mountain .section-divider svg { display: none; }
+body.divider-mountain .section-divider {
+  height: 90px;
+  overflow: visible;
+}
+body.divider-mountain .section-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  pointer-events: none;
+}
+body.divider-mountain .divider--subtle::before {
+  background: var(--cream-dark);
+  clip-path: polygon(0 65%, 8% 40%, 18% 55%, 30% 20%, 42% 45%, 55% 10%, 65% 35%, 78% 15%, 88% 40%, 95% 25%, 100% 50%, 100% 100%, 0 100%);
+}
+
+@media (max-width: 599px) {
+  body.divider-mountain .section-divider { height: 55px; }
+}
+
+/* --- Divider Style: Fade (no line) --- */
+body.divider-fade .section-divider svg { display: none; }
+body.divider-fade .section-divider {
+  height: 120px;
+  overflow: visible;
+}
+body.divider-fade .section-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+}
+body.divider-fade .divider--subtle::before {
+  background: linear-gradient(to bottom, var(--cream) 0%, var(--cream-dark) 100%);
+}
+
+@media (max-width: 599px) {
+  body.divider-fade .section-divider { height: 80px; }
+}
+
 /* --- Scroll Animations --- */
 .fade-in {
   opacity: 0;
@@ -240,13 +384,14 @@ a {
 /* --- Story paragraphs scroll animation --- */
 .story-animate {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(20px) translateZ(0);
   transition: opacity 1s ease, transform 1s ease;
+  will-change: opacity, transform;
 }
 
 .story-animate.story-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) translateZ(0);
 }
 
 /* --- Section Title --- */
@@ -652,6 +797,7 @@ a {
   background: var(--dark-brown);
   color: var(--cream);
   position: relative;
+  contain: layout style;
 }
 
 #story::before,
@@ -661,8 +807,11 @@ a {
   left: 0; right: 0;
   height: 80px;
   display: block;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
+/* Default: ellipse */
 #story::before {
   top: 0;
   background: var(--cream-dark);
@@ -673,6 +822,74 @@ a {
   bottom: 0;
   background: var(--cream);
   clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+/* Layered waves */
+body.divider-layered #story::before,
+body.divider-layered #story::after {
+  clip-path: none;
+  height: 90px;
+}
+body.divider-layered #story::before {
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+body.divider-layered #story::after {
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+/* Diagonal */
+body.divider-diagonal #story::before {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 60%);
+  height: 80px;
+}
+body.divider-diagonal #story::after {
+  clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%);
+  height: 80px;
+}
+
+/* Organic blob */
+body.divider-organic #story::before {
+  height: 100px;
+  clip-path: polygon(0 0, 100% 0, 100% 20%, 92% 50%, 83% 20%, 75% 60%, 67% 25%, 58% 55%, 50% 15%, 42% 60%, 33% 30%, 25% 65%, 17% 25%, 8% 55%, 0% 20%);
+}
+body.divider-organic #story::after {
+  height: 100px;
+  clip-path: polygon(0% 20%, 8% 55%, 17% 25%, 25% 65%, 33% 30%, 42% 60%, 50% 15%, 58% 55%, 67% 25%, 75% 60%, 83% 20%, 92% 50%, 100% 15%, 100% 100%, 0% 100%);
+}
+
+/* Soft arc */
+body.divider-arc #story::before,
+body.divider-arc #story::after {
+  clip-path: none;
+  height: 120px;
+}
+body.divider-arc #story::before {
+  border-radius: 0 0 50% 50% / 0 0 80% 80%;
+}
+body.divider-arc #story::after {
+  border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+}
+
+/* Mountain silhouette */
+body.divider-mountain #story::before {
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 95% 25%, 88% 40%, 78% 15%, 65% 35%, 55% 10%, 42% 45%, 30% 20%, 18% 55%, 8% 40%, 0 65%);
+  height: 90px;
+}
+body.divider-mountain #story::after {
+  clip-path: polygon(0 65%, 8% 40%, 18% 55%, 30% 20%, 42% 45%, 55% 10%, 65% 35%, 78% 15%, 88% 40%, 95% 25%, 100% 50%, 100% 100%, 0 100%);
+  height: 90px;
+}
+
+/* Fade (gradient) */
+body.divider-fade #story::before {
+  clip-path: none;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--cream-dark), var(--dark-brown));
+}
+body.divider-fade #story::after {
+  clip-path: none;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--dark-brown), var(--cream));
 }
 
 #collection .section-title {
@@ -1040,10 +1257,11 @@ a {
    Process
    ======================================== */
 #process {
-  padding: 5rem 1.5rem;
+  padding: 5rem 2.5rem;
   max-width: 800px;
   margin: 0 auto;
-  overflow: hidden;
+  overflow: clip;
+  contain: layout style;
 }
 
 .process-steps {
@@ -1093,7 +1311,7 @@ a {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .process-image img {
@@ -1135,6 +1353,7 @@ a {
 
 .process-animate {
   transition: opacity 0.9s ease, transform 0.9s ease;
+  will-change: opacity, transform;
 }
 
 .process-animate.process-visible {
@@ -1389,6 +1608,39 @@ a {
   height: 80px;
   background: var(--cream);
   clip-path: ellipse(55% 100% at 50% 0%);
+  z-index: 1;
+}
+
+body.divider-layered #footer::before {
+  clip-path: none;
+  height: 90px;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+
+body.divider-diagonal #footer::before {
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%);
+}
+
+body.divider-organic #footer::before {
+  height: 100px;
+  clip-path: polygon(0 0, 100% 0, 100% 15%, 92% 50%, 83% 20%, 75% 60%, 67% 25%, 58% 55%, 50% 15%, 42% 60%, 33% 30%, 25% 65%, 17% 25%, 8% 55%, 0% 20%);
+}
+
+body.divider-arc #footer::before {
+  clip-path: none;
+  height: 120px;
+  border-radius: 0 0 50% 50% / 0 0 80% 80%;
+}
+
+body.divider-mountain #footer::before {
+  height: 90px;
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 95% 25%, 88% 40%, 78% 15%, 65% 35%, 55% 10%, 42% 45%, 30% 20%, 18% 55%, 8% 40%, 0 65%);
+}
+
+body.divider-fade #footer::before {
+  clip-path: none;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--cream), var(--dark-brown));
 }
 
 .footer-logo {
@@ -1595,6 +1847,76 @@ a {
   #footer::before {
     height: 50px;
   }
+}
+
+/* ========================================
+   Section Transition: Overlap Slide
+   ======================================== */
+body.transition-overlap {
+  overflow-x: clip;
+}
+body.transition-overlap > section,
+body.transition-overlap > .section-divider,
+body.transition-overlap > footer {
+  position: sticky;
+  top: 0;
+  overflow: visible;
+}
+body.transition-overlap #hero { z-index: 1; }
+body.transition-overlap #collection { z-index: 2; background: var(--cream-dark); }
+body.transition-overlap .section-divider { z-index: 3; }
+body.transition-overlap #story { z-index: 4; }
+body.transition-overlap #process { z-index: 5; background: var(--cream); }
+body.transition-overlap #instagram { z-index: 6; background: var(--cream-dark); }
+body.transition-overlap #shop { z-index: 7; background: var(--cream); }
+body.transition-overlap #footer { z-index: 8; }
+
+body.transition-overlap > section:not(#hero),
+body.transition-overlap > footer {
+  box-shadow: 0 -30px 80px rgba(0,0,0,0.12);
+}
+
+/* ========================================
+   Section Transition: Zoom Fade
+   ======================================== */
+body.transition-zoom > section {
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+  will-change: transform, opacity;
+}
+body.transition-zoom > section.zoom-out {
+  transform: scale(0.96);
+  opacity: 0.3;
+}
+body.transition-zoom > section.zoom-in {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* ========================================
+   Section Transition: Parallax
+   ======================================== */
+body.transition-parallax > section {
+  position: relative;
+  z-index: 1;
+}
+body.transition-parallax .parallax-bg {
+  position: absolute;
+  top: -30%;
+  left: 0;
+  right: 0;
+  bottom: -30%;
+  z-index: -1;
+  will-change: transform;
+}
+body.transition-parallax #hero .hero-image {
+  will-change: transform;
+}
+body.transition-parallax .process-image,
+body.transition-parallax .concept-image {
+  will-change: transform;
+}
+body.transition-parallax > section .section-title {
+  will-change: transform;
 }
 
 /* Edit Mode styles are injected by edit.js */

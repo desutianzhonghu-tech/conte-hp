@@ -2,69 +2,7 @@
    conte.jpeg Brand HP — Script
    ======================================== */
 
-// Theme descriptions for modal
-const themeData = {
-  coral: {
-    ja: '珊瑚',
-    en: 'Coral',
-    description: '海底に息づく珊瑚のように、無数の小さな穴が有機的に広がる。自然が生んだ繊細な構造を、指先に宿す。'
-  },
-  bone: {
-    ja: '骨',
-    en: 'Bone',
-    description: '生命の根幹を支える骨の力強さ。大胆な穴と隆起が、プリミティブな存在感を放つ。'
-  },
-  ivy: {
-    ja: '蔦',
-    en: 'Ivy',
-    description: '壁を這い、光を求めて伸びる蔦。細長く連なる穴が、しなやかな生命力を表現する。'
-  },
-  plant: {
-    ja: '植物',
-    en: 'Plant',
-    description: '静かに、しかし確実に成長する植物のフォルム。流れるような穴が、生命の律動を刻む。'
-  },
-  lava: {
-    ja: '溶岩',
-    en: 'Lava',
-    description: '地球の内側から湧き上がる溶岩の混沌。不規則に刻まれた穴が、原始のエネルギーを纏う。'
-  },
-  ocean: {
-    ja: '海',
-    en: 'Ocean',
-    description: '波の満ち引きが生むリズム。穏やかな波紋のように広がる穴が、海の記憶を閉じ込める。'
-  },
-  'deep-sea': {
-    ja: '深海',
-    en: 'Deep Sea',
-    description: '光の届かない深海の神秘。密に並ぶ丸い穴が、未知なる深淵の静寂を映す。'
-  },
-  geometric: {
-    ja: '幾何学',
-    en: 'Geometric',
-    description: '自然界に潜む数学的秩序。規則正しく配列された穴が、カオスの中の美しい法則を可視化する。'
-  },
-  delicate: {
-    ja: '繊細',
-    en: 'Delicate',
-    description: '微細な穴が密集する、レースのような繊細さ。触れれば消えてしまいそうな、儚い美しさ。'
-  },
-  heavy: {
-    ja: '重厚',
-    en: 'Heavy',
-    description: '大地の重みを纏う、圧倒的な存在感。少数の大きな穴と荒々しい表面が、時の重みを語る。'
-  },
-  ancient: {
-    ja: '古代',
-    en: 'Ancient',
-    description: '何千年もの時を経た遺物のように。風化した表面が、悠久の時の流れを物語る。'
-  },
-  forest: {
-    ja: '森',
-    en: 'Forest',
-    description: '森の中で枝が絡み合い、苔が広がる。有機的な隆起が、森林の生命の連鎖を表現する。'
-  }
-};
+const themeData = {};
 
 // --- Scroll Animations ---
 function initScrollAnimations() {
@@ -149,44 +87,50 @@ function initScrollAnimations() {
     });
   }
 
-  // --- Story paragraphs: staggered fade-in — reversible ---
-  const storyParagraphs = document.querySelectorAll('.story-prose p');
-  if (storyParagraphs.length > 0) {
-    const storyObserver = new IntersectionObserver((entries) => {
+  // --- Story & Process: single observer, batched updates ---
+  const animTargets = [];
+
+  document.querySelectorAll('.story-prose p').forEach((p, i) => {
+    p.classList.add('story-animate');
+    p.style.transitionDelay = (i * 0.15) + 's';
+    animTargets.push({ el: p, cls: 'story-visible' });
+  });
+
+  document.querySelectorAll('.process-step').forEach((step, i) => {
+    step.classList.add('process-animate');
+    step.style.transitionDelay = (i * 0.25) + 's';
+    animTargets.push({ el: step, cls: 'process-visible' });
+  });
+
+  if (animTargets.length > 0) {
+    let rafPending = false;
+    let pendingChanges = [];
+
+    const combinedObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('story-visible');
-        } else {
-          entry.target.classList.remove('story-visible');
+        const target = animTargets.find(t => t.el === entry.target);
+        if (target) {
+          pendingChanges.push({ el: target.el, cls: target.cls, add: entry.isIntersecting });
         }
       });
-    }, { threshold: 0.3, rootMargin: '0px 0px -30px 0px' });
 
-    storyParagraphs.forEach((p, i) => {
-      p.classList.add('story-animate');
-      p.style.transitionDelay = (i * 0.15) + 's';
-      storyObserver.observe(p);
-    });
-  }
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(() => {
+          pendingChanges.forEach(({ el, cls, add }) => {
+            if (add) {
+              el.classList.add(cls);
+            } else {
+              el.classList.remove(cls);
+            }
+          });
+          pendingChanges = [];
+          rafPending = false;
+        });
+      }
+    }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
 
-  // --- Process steps: staggered reveal — reversible ---
-  const processSteps = document.querySelectorAll('.process-step');
-  if (processSteps.length > 0) {
-    const processObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('process-visible');
-        } else {
-          entry.target.classList.remove('process-visible');
-        }
-      });
-    }, { threshold: 0.3, rootMargin: '0px 0px -40px 0px' });
-
-    processSteps.forEach((step, i) => {
-      step.classList.add('process-animate');
-      step.style.transitionDelay = (i * 0.25) + 's';
-      processObserver.observe(step);
-    });
+    animTargets.forEach(t => combinedObserver.observe(t.el));
   }
 }
 
@@ -387,6 +331,89 @@ function initStickyBuy() {
   observer.observe(collection);
 }
 
+// --- Section Transition: Zoom Fade ---
+function initZoomFade() {
+  if (!document.body.classList.contains('transition-zoom')) return;
+  const sections = document.querySelectorAll('body > section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('zoom-out');
+        entry.target.classList.add('zoom-in');
+      } else {
+        entry.target.classList.remove('zoom-in');
+        entry.target.classList.add('zoom-out');
+      }
+    });
+  }, { threshold: 0.15 });
+  sections.forEach(s => observer.observe(s));
+}
+
+// --- Section Transition: Parallax ---
+let parallaxCleanup = null;
+function initParallax() {
+  if (parallaxCleanup) { parallaxCleanup(); parallaxCleanup = null; }
+  if (!document.body.classList.contains('transition-parallax')) return;
+
+  const heroImage = document.querySelector('#hero .hero-image');
+  const processImages = document.querySelectorAll('.process-image');
+  const conceptImages = document.querySelectorAll('.concept-image');
+  const titles = document.querySelectorAll('section .section-title');
+
+  let ticking = false;
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
+      const vh = window.innerHeight;
+
+      // Hero: background moves slower
+      if (heroImage) {
+        const y = scrollY * 0.35;
+        heroImage.style.transform = `translateY(${y}px)`;
+      }
+
+      // Process images: subtle float
+      processImages.forEach(img => {
+        const rect = img.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const offset = (center - vh / 2) * 0.08;
+        img.style.transform = `translateY(${offset}px)`;
+      });
+
+      // Concept images: subtle float
+      conceptImages.forEach(img => {
+        const rect = img.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const offset = (center - vh / 2) * 0.06;
+        img.style.transform = `translateY(${offset}px)`;
+      });
+
+      // Section titles: slight parallax
+      titles.forEach(t => {
+        const rect = t.getBoundingClientRect();
+        const offset = (rect.top - vh / 2) * -0.05;
+        t.style.transform = `translateY(${offset}px)`;
+      });
+
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  parallaxCleanup = () => {
+    window.removeEventListener('scroll', onScroll);
+    if (heroImage) heroImage.style.transform = '';
+    processImages.forEach(img => { img.style.transform = ''; });
+    conceptImages.forEach(img => { img.style.transform = ''; });
+    titles.forEach(t => { t.style.transform = ''; });
+  };
+}
+
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
@@ -394,4 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initModal();
   initSmoothScroll();
   initStickyBuy();
+  initZoomFade();
+  initParallax();
 });

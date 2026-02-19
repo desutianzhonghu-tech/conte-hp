@@ -1919,4 +1919,67 @@ body.transition-parallax > section .section-title {
   will-change: transform;
 }
 
+/* ========================================
+   Section Transition: Curtain Reveal
+   セクションが暗幕の奥から現れる
+   ======================================== */
+body.transition-curtain > section,
+body.transition-curtain > footer {
+  position: relative;
+}
+body.transition-curtain > section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--dark-brown);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+body.transition-curtain > section.curtain-dim::after {
+  opacity: 0.7;
+}
+
+/* ========================================
+   Section Transition: Cinematic
+   スクロールでセクションが奥に沈み込む
+   ======================================== */
+body.transition-cinematic > section {
+  transition: transform 0.7s cubic-bezier(0.25, 0, 0.15, 1),
+              opacity 0.7s ease,
+              filter 0.7s ease;
+  transform-origin: center top;
+  will-change: transform, opacity, filter;
+}
+body.transition-cinematic > section.cine-away {
+  transform: scale(0.92) translateY(-20px);
+  opacity: 0.4;
+  filter: blur(3px);
+}
+body.transition-cinematic > section.cine-active {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  filter: blur(0px);
+}
+
+/* ========================================
+   Section Transition: Slide Up (card stack)
+   次のセクションが下から持ち上がる
+   ======================================== */
+body.transition-slideup > section,
+body.transition-slideup > footer {
+  transition: transform 0.6s cubic-bezier(0.25, 0, 0.15, 1),
+              box-shadow 0.6s ease;
+  will-change: transform;
+}
+body.transition-slideup > section.slideup-next {
+  transform: translateY(60px);
+  box-shadow: 0 -40px 80px rgba(0,0,0,0.1);
+}
+body.transition-slideup > section.slideup-active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 /* Edit Mode styles are injected by edit.js */

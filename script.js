@@ -414,6 +414,91 @@ function initParallax() {
   };
 }
 
+// --- Section Transition: Curtain Reveal ---
+let curtainCleanup = null;
+function initCurtain() {
+  if (curtainCleanup) { curtainCleanup(); curtainCleanup = null; }
+  if (!document.body.classList.contains('transition-curtain')) return;
+
+  const sections = document.querySelectorAll('body > section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('curtain-dim');
+      } else {
+        // Only dim sections above viewport (already scrolled past)
+        const rect = entry.boundingClientRect;
+        if (rect.bottom < window.innerHeight * 0.5) {
+          entry.target.classList.add('curtain-dim');
+        } else {
+          entry.target.classList.remove('curtain-dim');
+        }
+      }
+    });
+  }, { threshold: [0, 0.3, 0.6, 1] });
+  sections.forEach(s => observer.observe(s));
+
+  curtainCleanup = () => {
+    observer.disconnect();
+    sections.forEach(s => s.classList.remove('curtain-dim'));
+  };
+}
+
+// --- Section Transition: Cinematic ---
+let cinematicCleanup = null;
+function initCinematic() {
+  if (cinematicCleanup) { cinematicCleanup(); cinematicCleanup = null; }
+  if (!document.body.classList.contains('transition-cinematic')) return;
+
+  const sections = document.querySelectorAll('body > section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+        entry.target.classList.remove('cine-away');
+        entry.target.classList.add('cine-active');
+      } else {
+        entry.target.classList.remove('cine-active');
+        entry.target.classList.add('cine-away');
+      }
+    });
+  }, { threshold: [0, 0.15, 0.5] });
+  sections.forEach(s => observer.observe(s));
+
+  cinematicCleanup = () => {
+    observer.disconnect();
+    sections.forEach(s => { s.classList.remove('cine-away', 'cine-active'); });
+  };
+}
+
+// --- Section Transition: Slide Up ---
+let slideupCleanup = null;
+function initSlideUp() {
+  if (slideupCleanup) { slideupCleanup(); slideupCleanup = null; }
+  if (!document.body.classList.contains('transition-slideup')) return;
+
+  const sections = document.querySelectorAll('body > section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+        entry.target.classList.remove('slideup-next');
+        entry.target.classList.add('slideup-active');
+      } else {
+        const rect = entry.boundingClientRect;
+        if (rect.top > 0) {
+          entry.target.classList.add('slideup-next');
+          entry.target.classList.remove('slideup-active');
+        }
+      }
+    });
+  }, { threshold: [0, 0.1, 0.4] });
+  sections.forEach(s => observer.observe(s));
+
+  slideupCleanup = () => {
+    observer.disconnect();
+    sections.forEach(s => { s.classList.remove('slideup-next', 'slideup-active'); });
+  };
+}
+
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
@@ -423,4 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStickyBuy();
   initZoomFade();
   initParallax();
+  initCurtain();
+  initCinematic();
+  initSlideUp();
 });

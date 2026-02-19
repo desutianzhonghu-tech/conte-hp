@@ -180,7 +180,7 @@
   const toolbar = document.createElement('div');
   toolbar.className = 'pe-toolbar';
   toolbar.innerHTML = `
-    <span>哲学 編集モード</span>
+    <span>徒筆 編集モード</span>
     <button class="pe-exit" type="button">終了</button>
     <button class="pe-save" type="button">公開</button>
   `;

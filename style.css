@@ -926,21 +926,21 @@ body.divider-fade #story::after {
 
 .story-prose p {
   font-weight: 300;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 2.4;
-  color: rgba(250, 249, 247, 0.7);
+  color: rgba(250, 249, 247, 0.88);
   margin-bottom: 1.8rem;
   letter-spacing: 0.03em;
 }
 
 .story-prose p:first-child {
-  font-size: 1rem;
-  color: rgba(250, 249, 247, 0.85);
+  font-size: 1.05rem;
+  color: rgba(250, 249, 247, 0.95);
 }
 
 .story-prose p:last-child {
   margin-bottom: 0;
-  color: rgba(250, 249, 247, 0.85);
+  color: rgba(250, 249, 247, 0.95);
 }
 
 @media (max-width: 599px) {
@@ -961,7 +961,7 @@ body.divider-fade #story::after {
   }
 
   .story-prose p {
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     line-height: 2.2;
   }
 }

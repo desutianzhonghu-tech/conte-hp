@@ -1,0 +1,241 @@
+/* Size Guide Page */
+
+.page-back {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  z-index: 100;
+  font-family: var(--font-en);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--taupe);
+  background: rgba(250, 249, 247, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0.5em 1em;
+  border-radius: 20px;
+  border: 1px solid rgba(61, 47, 40, 0.1);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.page-back:hover {
+  color: var(--dark-brown);
+}
+
+.sg-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8rem 1.5rem 3rem;
+}
+
+.sg-title {
+  font-family: var(--font-en);
+  font-weight: 300;
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  text-align: center;
+  color: var(--dark-brown);
+  margin-bottom: 1rem;
+}
+
+.sg-lead {
+  text-align: center;
+  font-weight: 200;
+  font-size: 0.95rem;
+  color: var(--taupe);
+  letter-spacing: 0.08em;
+  margin-bottom: 3rem;
+}
+
+/* Intro */
+.sg-intro {
+  margin-bottom: 3rem;
+}
+
+.sg-intro p {
+  font-weight: 300;
+  font-size: 0.88rem;
+  line-height: 2;
+  color: var(--dark-brown);
+  letter-spacing: 0.04em;
+}
+
+/* Section */
+.sg-section {
+  margin-bottom: 3rem;
+}
+
+.sg-section-title {
+  font-family: var(--font-ja);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  color: var(--dark-brown);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(61, 47, 40, 0.12);
+}
+
+/* Method blocks */
+.sg-method {
+  margin-bottom: 2rem;
+}
+
+.sg-method-title {
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--dark-brown);
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.06em;
+}
+
+.sg-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+}
+
+.sg-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.8rem;
+  font-weight: 300;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--dark-brown);
+}
+
+.sg-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-family: var(--font-en);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--taupe);
+  width: 1.4em;
+  height: 1.4em;
+  line-height: 1.4em;
+  text-align: center;
+  border: 1px solid rgba(61, 47, 40, 0.2);
+  border-radius: 50%;
+}
+
+/* Size table */
+.sg-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.sg-table th {
+  font-family: var(--font-en);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  padding: 0.8rem 0.6rem;
+  border-bottom: 1px solid rgba(61, 47, 40, 0.15);
+  text-align: center;
+}
+
+.sg-table td {
+  font-weight: 300;
+  color: var(--dark-brown);
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid rgba(61, 47, 40, 0.06);
+  text-align: center;
+}
+
+.sg-table tbody tr:hover {
+  background: rgba(61, 47, 40, 0.02);
+}
+
+/* Tips */
+.sg-tips {
+  list-style: none;
+  padding: 0;
+}
+
+.sg-tips li {
+  position: relative;
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--dark-brown);
+}
+
+.sg-tips li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
+  background: var(--taupe);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* Note */
+.sg-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--cream-dark);
+  border-radius: 4px;
+}
+
+.sg-note p {
+  font-weight: 300;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: var(--taupe);
+  text-align: center;
+}
+
+.sg-note a {
+  color: var(--dark-brown);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Footer */
+.sg-footer {
+  text-align: center;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Mobile */
+@media (max-width: 599px) {
+  .sg-page {
+    padding: 5rem 1.5rem 2rem;
+  }
+
+  .sg-title {
+    font-size: 2rem;
+  }
+
+  .sg-lead {
+    margin-bottom: 2rem;
+  }
+
+  .sg-table {
+    font-size: 0.78rem;
+  }
+
+  .sg-table th,
+  .sg-table td {
+    padding: 0.55rem 0.4rem;
+  }
+}

@@ -39,51 +39,19 @@ function initScrollAnimations() {
     }, { passive: true });
   }
 
-  // --- Mobile: Collection auto-fade on scroll — reversible ---
+  // --- Mobile: Collection tap hint animation ---
   if (window.matchMedia('(max-width: 599px)').matches) {
-    const autoFadeObserver = new IntersectionObserver((entries) => {
+    const hintObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        const item = entry.target;
         if (entry.isIntersecting) {
-          if (!item.classList.contains('auto-revealed')) {
-            item._autoTimer = setTimeout(() => {
-              item.classList.add('auto-revealed');
-              const img1 = item.querySelector('.collection-img-1');
-              const img2 = item.querySelector('.collection-img-2');
-              if (img1) img1.style.opacity = '0';
-              if (img2) img2.style.opacity = '1';
-
-              const nameJa = item.querySelector('.theme-name-ja')?.textContent || '';
-              const nameEn = item.querySelector('.theme-name-en')?.textContent || '';
-              const buyHref = item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
-              const overlay = document.createElement('div');
-              overlay.className = 'collection-auto-overlay';
-              overlay.innerHTML =
-                '<span class="auto-name">' + nameJa + ' / ' + nameEn + '</span>' +
-                '<a class="auto-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
-              item.appendChild(overlay);
-            }, 800);
-          }
-        } else {
-          // Reverse: reset to original state
-          clearTimeout(item._autoTimer);
-          if (item.classList.contains('auto-revealed')) {
-            item.classList.remove('auto-revealed');
-            const img1 = item.querySelector('.collection-img-1');
-            const img2 = item.querySelector('.collection-img-2');
-            if (img1) img1.style.opacity = '';
-            if (img2) img2.style.opacity = '';
-            const overlay = item.querySelector('.collection-auto-overlay');
-            if (overlay) overlay.remove();
-          }
+          entry.target.classList.add('tap-hint-visible');
+          hintObserver.unobserve(entry.target);
         }
       });
-    }, {
-      threshold: 0.6
-    });
+    }, { threshold: 0.5 });
 
     document.querySelectorAll('.collection-item').forEach(item => {
-      autoFadeObserver.observe(item);
+      hintObserver.observe(item);
     });
   }
 
@@ -167,20 +135,31 @@ function initModal() {
     });
   }
 
+  // Hide tap hints and prompt after first tap
+  let firstTapDone = false;
+  function hideHints() {
+    if (firstTapDone) return;
+    firstTapDone = true;
+    allItems.forEach(el => el.classList.remove('tap-hint-visible'));
+    const prompt = document.querySelector('.collection-tap-prompt');
+    if (prompt) {
+      prompt.style.transition = 'opacity 0.5s ease';
+      prompt.style.opacity = '0';
+    }
+  }
+
   allItems.forEach(item => {
     item.addEventListener('click', (e) => {
       if (e.target.closest('.tap-buy') || e.target.closest('.auto-buy')) return;
 
       if (isMobile) {
-        // Already auto-revealed: skip tap overlay logic
-        if (item.classList.contains('auto-revealed')) return;
-
         const wasTapped = item.classList.contains('tapped');
 
         // Reset all
         resetAllItems();
 
         if (!wasTapped) {
+          hideHints();
           const data = getItemData(item);
 
           // 1st tap: swap image + show name, short desc, buy

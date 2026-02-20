@@ -1148,7 +1148,7 @@ body.divider-gentle #story::after {
     display: none;
   }
 
-  /* Tap overlay shown via JS */
+  /* Tap overlay shown via JS — fade in */
   .collection-tap-overlay {
     position: absolute;
     inset: 0;
@@ -1156,38 +1156,87 @@ body.divider-gentle #story::after {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background: linear-gradient(to top, rgba(61, 47, 40, 0.8) 0%, rgba(61, 47, 40, 0.25) 100%);
+    justify-content: flex-end;
+    background: linear-gradient(to top, rgba(61, 47, 40, 0.75) 0%, transparent 60%);
     text-align: center;
-    padding: 0.8rem;
+    padding: 1rem 0.8rem;
+    animation: tapOverlayIn 0.4s ease both;
+  }
+
+  @keyframes tapOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .collection-tap-overlay .tap-name {
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 400;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.3rem;
-  }
-
-  .collection-tap-overlay .tap-desc {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.65rem;
-    font-weight: 300;
-    line-height: 1.7;
-    margin-bottom: 0.6rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    animation: tapTextIn 0.5s ease 0.1s both;
   }
 
   .collection-tap-overlay .tap-buy {
     color: #fff;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 300;
     letter-spacing: 0.08em;
-    padding: 0.5em 1.2em;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.1);
+    padding: 0.45em 1.1em;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
     text-decoration: none;
     white-space: nowrap;
+    animation: tapTextIn 0.5s ease 0.2s both;
+  }
+
+  @keyframes tapTextIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Tap hint — persistent label on items */
+  .collection-item.tap-hint-visible::after {
+    content: 'Touch';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    font-family: var(--font-en);
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    padding: 1em 0;
+    background: linear-gradient(to top, rgba(61, 47, 40, 0.55) 0%, transparent 100%);
+    animation: tapHintBreath 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Hide hint once tapped */
+  .collection-item.tapped::after {
+    display: none;
+  }
+
+  @keyframes tapHintBreath {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+
+  /* Tap prompt text above grid */
+  .collection-tap-prompt {
+    display: block;
+    text-align: center;
+    font-family: var(--font-en);
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--taupe);
+    margin-bottom: 1.2rem;
+    opacity: 0.6;
   }
 
   .collection-subtitle {
@@ -1195,6 +1244,11 @@ body.divider-gentle #story::after {
     margin-bottom: 1.5rem;
     font-size: 0.8rem;
   }
+}
+
+/* Tap prompt: hidden on desktop */
+.collection-tap-prompt {
+  display: none;
 }
 
 /* --- Collection CTA (bottom) --- */
@@ -1572,6 +1626,22 @@ body.divider-gentle #story::after {
   font-size: 0.95rem;
   color: var(--taupe);
   margin-bottom: 2rem;
+}
+
+.shop-size-guide {
+  display: block;
+  margin-top: 1.2rem;
+  font-family: var(--font-ja);
+  font-weight: 300;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--taupe);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.shop-size-guide:hover {
+  color: var(--dark-brown);
 }
 
 /* ========================================

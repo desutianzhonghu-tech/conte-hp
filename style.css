@@ -1548,8 +1548,10 @@ body.divider-gentle #story::after {
   opacity: 0.85;
 }
 
-.instagram-cta {
+.instagram-cta,
+.story-cta {
   text-align: center;
+  margin-top: 3rem;
 }
 
 /* ========================================

@@ -150,7 +150,7 @@ function initModal() {
 
   allItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      if (e.target.closest('.tap-buy') || e.target.closest('.auto-buy')) return;
+      if (e.target.closest('.tap-buy') || e.target.closest('.auto-buy') || e.target.closest('.bottom-buy')) return;
 
       if (isMobile) {
         const wasTapped = item.classList.contains('tapped');
@@ -168,11 +168,18 @@ function initModal() {
           item.querySelector('.collection-img-2').style.opacity = '1';
 
           const buyHref = data.buyLink || item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+          const priceText = item.querySelector('.collection-price')?.textContent || '';
+          const isSoldOut = item.dataset.soldOut === 'true';
           const overlay = document.createElement('div');
           overlay.className = 'collection-tap-overlay';
-          overlay.innerHTML =
-            '<span class="tap-name">' + data.ja + ' / ' + data.en + '</span>' +
-            '<a class="tap-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
+          let tapHtml = '<span class="tap-name">' + data.ja + ' / ' + data.en + '</span>';
+          if (priceText) tapHtml += '<span class="tap-price" style="color:#fff;font-family:var(--font-en);font-size:0.7rem;font-weight:300;letter-spacing:0.1em;opacity:0.8;">' + priceText + '</span>';
+          if (isSoldOut) {
+            tapHtml += '<span class="collection-sold-out">sold out</span>';
+          } else {
+            tapHtml += '<a class="tap-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
+          }
+          overlay.innerHTML = tapHtml;
           item.appendChild(overlay);
           return;
         }
@@ -478,8 +485,262 @@ function initSlideUp() {
   };
 }
 
+// --- Collection Order (localStorage) ---
+function applyCollectionOrder() {
+  const saved = localStorage.getItem('conte-collection-order');
+  if (!saved) return;
+  try {
+    const order = JSON.parse(saved);
+    const grid = document.querySelector('.collection-grid');
+    if (!grid) return;
+    const items = Array.from(grid.querySelectorAll('.collection-item'));
+    const map = {};
+    items.forEach(item => { map[item.dataset.theme] = item; });
+    order.forEach(theme => {
+      if (map[theme]) grid.appendChild(map[theme]);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+// --- Edit Mode (Collection Reorder) ---
+function initEditMode() {
+  if (sessionStorage.getItem('conte-edit') !== '1') return;
+
+  document.body.classList.add('edit-mode');
+
+  // Banner
+  const banner = document.createElement('div');
+  banner.className = 'edit-mode-banner';
+  banner.innerHTML = '編集モード — コレクションをドラッグで並び替え' +
+    '<button id="editResetOrder">順番リセット</button>' +
+    '<button id="editExit">編集を終了</button>';
+  document.body.prepend(banner);
+
+  document.getElementById('editExit').addEventListener('click', () => {
+    sessionStorage.removeItem('conte-edit');
+    document.body.classList.remove('edit-mode');
+    banner.remove();
+    handles.forEach(h => h.remove());
+  });
+
+  document.getElementById('editResetOrder').addEventListener('click', () => {
+    localStorage.removeItem('conte-collection-order');
+    location.reload();
+  });
+
+  // Drag handles (numbering)
+  const grid = document.querySelector('.collection-grid');
+  if (!grid) return;
+  const items = () => Array.from(grid.querySelectorAll('.collection-item'));
+  const handles = [];
+
+  function addHandles() {
+    handles.forEach(h => h.remove());
+    handles.length = 0;
+    items().forEach((item, i) => {
+      item.setAttribute('draggable', 'true');
+      const handle = document.createElement('div');
+      handle.className = 'collection-drag-handle';
+      handle.textContent = (i + 1);
+      item.appendChild(handle);
+      handles.push(handle);
+    });
+  }
+  addHandles();
+
+  function saveOrder() {
+    const order = items().map(item => item.dataset.theme);
+    localStorage.setItem('conte-collection-order', JSON.stringify(order));
+  }
+
+  // Drag & Drop (PC)
+  let dragSrc = null;
+
+  grid.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('.collection-item');
+    if (!item) return;
+    dragSrc = item;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  grid.addEventListener('dragend', (e) => {
+    const item = e.target.closest('.collection-item');
+    if (item) item.classList.remove('dragging');
+    items().forEach(el => el.classList.remove('drag-over'));
+  });
+
+  grid.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const item = e.target.closest('.collection-item');
+    if (item && item !== dragSrc) {
+      items().forEach(el => el.classList.remove('drag-over'));
+      item.classList.add('drag-over');
+    }
+  });
+
+  grid.addEventListener('dragleave', (e) => {
+    const item = e.target.closest('.collection-item');
+    if (item) item.classList.remove('drag-over');
+  });
+
+  grid.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const target = e.target.closest('.collection-item');
+    if (!target || target === dragSrc || !dragSrc) return;
+    target.classList.remove('drag-over');
+
+    const all = items();
+    const fromIdx = all.indexOf(dragSrc);
+    const toIdx = all.indexOf(target);
+
+    if (fromIdx < toIdx) {
+      grid.insertBefore(dragSrc, target.nextSibling);
+    } else {
+      grid.insertBefore(dragSrc, target);
+    }
+
+    addHandles();
+    saveOrder();
+  });
+
+  // Touch Drag (スマホ)
+  let touchSrc = null;
+  let touchClone = null;
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
+  let touchMoved = false;
+
+  grid.addEventListener('touchstart', (e) => {
+    const item = e.target.closest('.collection-item');
+    if (!item) return;
+    touchSrc = item;
+    touchMoved = false;
+    const touch = e.touches[0];
+    const rect = item.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+  }, { passive: true });
+
+  grid.addEventListener('touchmove', (e) => {
+    if (!touchSrc) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+
+    if (!touchMoved) {
+      touchMoved = true;
+      touchSrc.classList.add('dragging');
+      // floating clone
+      touchClone = touchSrc.cloneNode(true);
+      touchClone.style.cssText = 'position:fixed;z-index:10000;pointer-events:none;opacity:0.8;' +
+        'width:' + touchSrc.offsetWidth + 'px;height:' + touchSrc.offsetHeight + 'px;';
+      document.body.appendChild(touchClone);
+    }
+
+    touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+    touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+    // highlight drop target
+    items().forEach(el => el.classList.remove('drag-over'));
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    const targetItem = target ? target.closest('.collection-item') : null;
+    if (targetItem && targetItem !== touchSrc) {
+      targetItem.classList.add('drag-over');
+    }
+  }, { passive: false });
+
+  grid.addEventListener('touchend', (e) => {
+    if (!touchSrc) return;
+
+    if (touchClone) {
+      touchClone.remove();
+      touchClone = null;
+    }
+    touchSrc.classList.remove('dragging');
+    items().forEach(el => el.classList.remove('drag-over'));
+
+    if (touchMoved) {
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetItem = target ? target.closest('.collection-item') : null;
+
+      if (targetItem && targetItem !== touchSrc) {
+        const all = items();
+        const fromIdx = all.indexOf(touchSrc);
+        const toIdx = all.indexOf(targetItem);
+
+        if (fromIdx < toIdx) {
+          grid.insertBefore(touchSrc, targetItem.nextSibling);
+        } else {
+          grid.insertBefore(touchSrc, targetItem);
+        }
+
+        addHandles();
+        saveOrder();
+      }
+    }
+
+    touchSrc = null;
+    touchMoved = false;
+  });
+}
+
+// --- Collection: Apply saved data + Always-visible bottom info (PC) + Auto-overlay (Mobile) ---
+function initCollectionInfo() {
+  const isMobile = window.matchMedia('(max-width: 599px)').matches;
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+  const items = document.querySelectorAll('.collection-item');
+
+  items.forEach(item => {
+    const nameJa = item.querySelector('.theme-name-ja')?.textContent || '';
+    const priceEl = item.querySelector('.collection-price');
+    const price = priceEl ? priceEl.textContent : '';
+    const buyLink = item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+    const isSoldOut = item.dataset.soldOut === 'true';
+
+    if (isMobile || isTouch) {
+      // Mobile: create auto-overlay (always visible at bottom)
+      const autoOverlay = document.createElement('div');
+      autoOverlay.className = 'collection-auto-overlay';
+      let html = '<span class="auto-name">' + nameJa + '</span>';
+      html += '<span class="auto-price">' + price + '</span>';
+      if (isSoldOut) {
+        html += '<span class="collection-sold-out">sold out</span>';
+      } else {
+        html += '<a class="auto-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
+      }
+      autoOverlay.innerHTML = html;
+      item.appendChild(autoOverlay);
+    } else {
+      // PC: create bottom info bar (always visible)
+      const bottom = document.createElement('div');
+      bottom.className = 'collection-item-bottom';
+      let html = '<span class="bottom-name">' + nameJa + '</span>';
+      html += '<span class="bottom-price">' + price + '</span>';
+      if (isSoldOut) {
+        html += '<span class="collection-sold-out">sold out</span>';
+      } else {
+        html += '<a class="bottom-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
+      }
+      bottom.innerHTML = html;
+      item.appendChild(bottom);
+
+      // Prevent image swap when hovering over bottom bar
+      bottom.addEventListener('mouseenter', () => {
+        item.classList.add('bottom-hover');
+      });
+      bottom.addEventListener('mouseleave', () => {
+        item.classList.remove('bottom-hover');
+      });
+    }
+  });
+}
+
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
+  applyCollectionOrder();
+  initCollectionInfo();
   initSidebar();
   initScrollAnimations();
   initModal();
@@ -490,4 +751,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCurtain();
   initCinematic();
   initSlideUp();
+  initEditMode();
 });

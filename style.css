@@ -404,6 +404,14 @@ body.divider-gentle .divider--subtle::before {
   background: rgba(250,249,247,0.15);
 }
 
+.collection-auto-overlay .auto-price {
+  font-family: var(--font-en);
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: rgba(250,249,247,0.75);
+  letter-spacing: 0.1em;
+}
+
 @keyframes autoOverlayIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -706,12 +714,19 @@ body.divider-gentle .divider--subtle::before {
   letter-spacing: 0.3em;
 }
 
-/* Hero CTA button */
-.hero-cta {
+/* Hero CTA group */
+.hero-cta-group {
   position: absolute;
   bottom: 5rem;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+/* Hero CTA button */
+.hero-cta {
   color: #fff;
   font-family: var(--font-en);
   font-weight: 400;
@@ -1067,30 +1082,32 @@ body.divider-gentle #story::after {
 
 .theme-name-ja,
 .theme-name-en,
-.collection-buy {
+.collection-buy,
+.collection-price {
   color: #fff;
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Desktop only: hover effects */
+/* Desktop only: hover effects (disabled when hovering bottom bar) */
 @media (hover: hover) and (pointer: fine) {
-  .collection-item:hover .collection-img-1 {
+  .collection-item:hover:not(.bottom-hover) .collection-img-1 {
     opacity: 0;
   }
 
-  .collection-item:hover .collection-img-2 {
+  .collection-item:hover:not(.bottom-hover) .collection-img-2 {
     opacity: 1;
   }
 
-  .collection-item:hover .collection-item-overlay {
+  .collection-item:hover:not(.bottom-hover) .collection-item-overlay {
     background: rgba(61, 47, 40, 0.45);
   }
 
-  .collection-item:hover .theme-name-ja,
-  .collection-item:hover .theme-name-en,
-  .collection-item:hover .collection-buy {
+  .collection-item:hover:not(.bottom-hover) .theme-name-ja,
+  .collection-item:hover:not(.bottom-hover) .theme-name-en,
+  .collection-item:hover:not(.bottom-hover) .collection-buy,
+  .collection-item:hover:not(.bottom-hover) .collection-price {
     opacity: 1;
     transform: translateY(0);
   }
@@ -1124,6 +1141,99 @@ body.divider-gentle #story::after {
 
 .collection-buy:hover {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- Collection Price --- */
+.collection-price {
+  font-family: var(--font-en);
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.6rem;
+}
+
+/* --- PC: Always-visible bottom info bar --- */
+@media (hover: hover) and (pointer: fine) {
+  .collection-item-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2.5rem 1rem 0.8rem;
+    background: linear-gradient(to top, rgba(61,47,40,0.75) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    z-index: 3;
+  }
+
+  .collection-item-bottom .bottom-name {
+    font-family: var(--font-ja);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.08em;
+  }
+
+  .collection-item-bottom .bottom-price {
+    font-family: var(--font-en);
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.1em;
+  }
+
+  .collection-item-bottom .bottom-buy {
+    display: inline-block;
+    font-family: var(--font-en);
+    font-size: 0.6rem;
+    color: #fff;
+    letter-spacing: 0.08em;
+    padding: 0.35em 1em;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50px;
+    margin-top: 0.3rem;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+
+  .collection-item-bottom .bottom-buy:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+}
+
+/* --- Sold Out --- */
+.collection-item[data-sold-out="true"] .collection-img-1,
+.collection-item[data-sold-out="true"] .collection-img-2 {
+  opacity: 0.5;
+  filter: grayscale(30%);
+}
+
+.collection-item[data-sold-out="true"] .collection-img-2 {
+  opacity: 0;
+}
+
+.collection-item[data-sold-out="true"] .collection-buy,
+.collection-item[data-sold-out="true"] .bottom-buy,
+.collection-item[data-sold-out="true"] .auto-buy {
+  display: none;
+}
+
+.collection-item[data-sold-out="true"] {
+  pointer-events: none;
+}
+
+.collection-sold-out {
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  margin-top: 0.3rem;
 }
 
 /* --- Collection subtitle --- */
@@ -2115,4 +2225,64 @@ body.transition-slideup > section.slideup-active {
   box-shadow: none;
 }
 
-/* Edit Mode styles are injected by edit.js */
+/* ========================================
+   Edit Mode — Collection Reorder
+   ======================================== */
+.edit-mode .collection-item {
+  cursor: grab;
+}
+.edit-mode .collection-item:active {
+  cursor: grabbing;
+}
+.edit-mode .collection-item.dragging {
+  opacity: 0.4;
+}
+.edit-mode .collection-item.drag-over {
+  outline: 3px solid rgba(250,249,247,0.7);
+  outline-offset: -3px;
+}
+.edit-mode .collection-drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  background: rgba(61,47,40,0.75);
+  color: #faf9f7;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  font-family: 'Noto Serif JP', serif;
+}
+.edit-mode-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(61,47,40,0.92);
+  color: #faf9f7;
+  text-align: center;
+  padding: 10px 16px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.edit-mode-banner button {
+  background: #faf9f7;
+  color: #3d2f28;
+  border: none;
+  padding: 5px 14px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.edit-mode-banner button:hover {
+  opacity: 0.85;
+}
+

@@ -175,6 +175,15 @@ function initModal() {
 
   modalClose.addEventListener('click', closeModal);
   modalBackdrop.addEventListener('click', closeModal);
+
+  // Mobile: tap anywhere except buy button closes modal
+  if (isMobile) {
+    modal.querySelector('.modal-content').addEventListener('click', (e) => {
+      if (e.target.closest('.btn--primary') || e.target.closest('.modal-sold-out')) return;
+      closeModal();
+    });
+  }
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       closeModal();

@@ -506,27 +506,9 @@ function applyCollectionOrder() {
 function initEditMode() {
   if (sessionStorage.getItem('conte-edit') !== '1') return;
 
+  // edit.js が独自ツールバーを持っているので、バナーは出さない
+  // （edit.js は即時関数で先に実行される）
   document.body.classList.add('edit-mode');
-
-  // Banner
-  const banner = document.createElement('div');
-  banner.className = 'edit-mode-banner';
-  banner.innerHTML = '編集モード — コレクションをドラッグで並び替え' +
-    '<button id="editResetOrder">順番リセット</button>' +
-    '<button id="editExit">編集を終了</button>';
-  document.body.prepend(banner);
-
-  document.getElementById('editExit').addEventListener('click', () => {
-    sessionStorage.removeItem('conte-edit');
-    document.body.classList.remove('edit-mode');
-    banner.remove();
-    handles.forEach(h => h.remove());
-  });
-
-  document.getElementById('editResetOrder').addEventListener('click', () => {
-    localStorage.removeItem('conte-collection-order');
-    location.reload();
-  });
 
   // Drag handles (numbering)
   const grid = document.querySelector('.collection-grid');

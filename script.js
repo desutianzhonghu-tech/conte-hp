@@ -506,8 +506,10 @@ function applyCollectionOrder() {
 function initEditMode() {
   if (sessionStorage.getItem('conte-edit') !== '1') return;
 
-  // edit.js が独自ツールバーを持っているので、バナーは出さない
-  // （edit.js は即時関数で先に実行される）
+  // モバイルではドラッグ並び替えを無効にする（edit.jsのツールバーで操作）
+  const isMobile = window.matchMedia('(max-width: 599px)').matches;
+  if (isMobile) return;
+
   document.body.classList.add('edit-mode');
 
   // Drag handles (numbering)

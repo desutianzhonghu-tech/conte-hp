@@ -39,22 +39,6 @@ function initScrollAnimations() {
     }, { passive: true });
   }
 
-  // --- Mobile: Collection tap hint animation ---
-  if (window.matchMedia('(max-width: 599px)').matches) {
-    const hintObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('tap-hint-visible');
-          hintObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    document.querySelectorAll('.collection-item').forEach(item => {
-      hintObserver.observe(item);
-    });
-  }
-
   // --- Story & Process: single observer, batched updates ---
   const animTargets = [];
 
@@ -111,6 +95,12 @@ function initModal() {
   const modalDesc = modal.querySelector('.modal-description');
   const modalClose = modal.querySelector('.modal-close');
   const modalBackdrop = modal.querySelector('.modal-backdrop');
+  const modalBuyBtn = modal.querySelector('.modal-info .btn--primary');
+
+  // Create modal-price element (inserted after modal-theme-en)
+  const modalPrice = document.createElement('p');
+  modalPrice.className = 'modal-price';
+  modalEn.after(modalPrice);
 
   const isMobile = window.matchMedia('(max-width: 599px)').matches;
   const allItems = document.querySelectorAll('.collection-item');
@@ -125,89 +115,56 @@ function initModal() {
     return { ja, en, description: ja + ' / ' + en, buyLink };
   }
 
-  function resetAllItems() {
-    allItems.forEach(el => {
-      el.classList.remove('tapped');
-      el.querySelector('.collection-img-1').style.opacity = '';
-      el.querySelector('.collection-img-2').style.opacity = '';
-      const ov = el.querySelector('.collection-tap-overlay');
-      if (ov) ov.remove();
-    });
-  }
+  function openModal(item) {
+    const data = getItemData(item);
+    const buyHref = data.buyLink || item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
+    const priceText = item.querySelector('.collection-price')?.textContent || '';
+    const isSoldOut = item.dataset.soldOut === 'true';
 
-  // Hide tap hints and prompt after first tap
-  let firstTapDone = false;
-  function hideHints() {
-    if (firstTapDone) return;
-    firstTapDone = true;
-    allItems.forEach(el => el.classList.remove('tap-hint-visible'));
-    const prompt = document.querySelector('.collection-tap-prompt');
-    if (prompt) {
-      prompt.style.transition = 'opacity 0.5s ease';
-      prompt.style.opacity = '0';
+    modalImg.src = item.querySelector('.collection-img-1').src;
+    modalImg.alt = `${data.ja} / ${data.en}`;
+    modalJa.textContent = data.ja;
+    modalEn.textContent = data.en;
+    modalDesc.textContent = data.description;
+
+    // Set price
+    modalPrice.textContent = priceText;
+    modalPrice.style.display = priceText ? '' : 'none';
+
+    // Set buy button or sold out
+    if (isSoldOut) {
+      modalBuyBtn.style.display = 'none';
+      // Show sold out text if not already present
+      let soldEl = modal.querySelector('.modal-sold-out');
+      if (!soldEl) {
+        soldEl = document.createElement('span');
+        soldEl.className = 'modal-sold-out';
+        soldEl.textContent = 'sold out';
+        soldEl.style.cssText = 'font-family:var(--font-en);font-size:0.8rem;font-weight:300;letter-spacing:0.3em;text-transform:uppercase;color:var(--taupe);';
+        modalBuyBtn.after(soldEl);
+      }
+      soldEl.style.display = '';
+    } else {
+      modalBuyBtn.style.display = '';
+      modalBuyBtn.href = buyHref;
+      const soldEl = modal.querySelector('.modal-sold-out');
+      if (soldEl) soldEl.style.display = 'none';
     }
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
 
   allItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      if (e.target.closest('.tap-buy') || e.target.closest('.auto-buy') || e.target.closest('.bottom-buy')) return;
+      if (e.target.closest('.auto-buy') || e.target.closest('.bottom-buy')) return;
 
-      if (isMobile) {
-        const wasTapped = item.classList.contains('tapped');
-
-        // Reset all
-        resetAllItems();
-
-        if (!wasTapped) {
-          hideHints();
-          const data = getItemData(item);
-
-          // 1st tap: swap image + show name, short desc, buy
-          item.classList.add('tapped');
-          item.querySelector('.collection-img-1').style.opacity = '0';
-          item.querySelector('.collection-img-2').style.opacity = '1';
-
-          const buyHref = data.buyLink || item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
-          const priceText = item.querySelector('.collection-price')?.textContent || '';
-          const isSoldOut = item.dataset.soldOut === 'true';
-          const overlay = document.createElement('div');
-          overlay.className = 'collection-tap-overlay';
-          let tapHtml = '<span class="tap-name">' + data.ja + ' / ' + data.en + '</span>';
-          if (priceText) tapHtml += '<span class="tap-price">' + priceText + '</span>';
-          if (isSoldOut) {
-            tapHtml += '<span class="collection-sold-out">sold out</span>';
-          } else {
-            tapHtml += '<a class="tap-buy" href="' + buyHref + '" target="_blank" rel="noopener">購入はこちら →</a>';
-          }
-          overlay.innerHTML = tapHtml;
-          item.appendChild(overlay);
-          return;
-        }
-        // 2nd tap: fall through to open modal
-      }
-
-      const data = getItemData(item);
-
-      modalImg.src = item.querySelector('.collection-img-1').src;
-      modalImg.alt = `${data.ja} / ${data.en}`;
-      modalJa.textContent = data.ja;
-      modalEn.textContent = data.en;
-      modalDesc.textContent = data.description;
-
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
+      // Mobile: directly open modal on 1 tap
+      // Desktop: open modal on click (after hover shows overlay)
+      openModal(item);
     });
   });
-
-  // Mobile: tap outside to reset
-  if (isMobile) {
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.collection-item')) {
-        resetAllItems();
-      }
-    });
-  }
 
   // Close modal
   function closeModal() {

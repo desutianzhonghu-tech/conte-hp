@@ -373,7 +373,9 @@ body.divider-gentle .divider--subtle::before {
   background: linear-gradient(to top, rgba(61,47,40,0.85) 0%, transparent 100%);
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
+  z-index: 1;
+  transition: opacity 0.3s ease;
   animation: autoOverlayIn 0.8s ease both;
 }
 
@@ -385,31 +387,30 @@ body.divider-gentle .divider--subtle::before {
   letter-spacing: 0.06em;
 }
 
+.collection-auto-overlay .auto-price {
+  font-family: var(--font-en);
+  font-size: 0.6rem;
+  font-weight: 300;
+  color: rgba(250,249,247,0.7);
+  letter-spacing: 0.1em;
+}
+
 .collection-auto-overlay .auto-buy {
   display: inline-block;
   font-family: var(--font-en);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   color: #faf9f7;
   text-decoration: none;
   letter-spacing: 0.08em;
-  padding: 0.35em 1em;
-  border: 1px solid rgba(250,249,247,0.5);
+  padding: 0.4em 1.1em;
+  border: 1px solid rgba(250,249,247,0.45);
   border-radius: 50px;
-  margin-top: 0.2rem;
   align-self: flex-start;
   transition: background 0.2s;
 }
 
 .collection-auto-overlay .auto-buy:active {
   background: rgba(250,249,247,0.15);
-}
-
-.collection-auto-overlay .auto-price {
-  font-family: var(--font-en);
-  font-size: 0.65rem;
-  font-weight: 300;
-  color: rgba(250,249,247,0.75);
-  letter-spacing: 0.1em;
 }
 
 @keyframes autoOverlayIn {
@@ -723,6 +724,15 @@ body.divider-gentle .divider--subtle::before {
   display: flex;
   gap: 1rem;
   white-space: nowrap;
+}
+
+@media (max-width: 599px) {
+  .hero-cta-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    bottom: 4rem;
+  }
 }
 
 /* Hero CTA button */
@@ -1106,10 +1116,14 @@ body.divider-gentle #story::after {
 
   .collection-item:hover:not(.bottom-hover) .theme-name-ja,
   .collection-item:hover:not(.bottom-hover) .theme-name-en,
-  .collection-item:hover:not(.bottom-hover) .collection-buy,
   .collection-item:hover:not(.bottom-hover) .collection-price {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  /* Hide overlay buy button — bottom bar has it */
+  .collection-buy {
+    display: none;
   }
 }
 
@@ -1195,12 +1209,14 @@ body.divider-gentle #story::after {
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: 50px;
     margin-top: 0.3rem;
-    transition: background 0.2s;
+    transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
     text-decoration: none;
   }
 
   .collection-item-bottom .bottom-buy:hover {
+    transform: scale(1.15);
     background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.8);
   }
 
 }
@@ -1222,8 +1238,10 @@ body.divider-gentle #story::after {
   display: none;
 }
 
-.collection-item[data-sold-out="true"] {
-  pointer-events: none;
+@media (hover: hover) and (pointer: fine) {
+  .collection-item[data-sold-out="true"] {
+    pointer-events: none;
+  }
 }
 
 .collection-sold-out {
@@ -1305,48 +1323,24 @@ body.divider-gentle #story::after {
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Tap hint — persistent label on items */
+  /* Hide tap hints — auto-overlay shows info already */
   .collection-item.tap-hint-visible::after {
-    content: 'Touch';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    font-family: var(--font-en);
-    font-size: 0.65rem;
-    font-weight: 300;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
-    text-align: center;
-    padding: 1em 0;
-    background: linear-gradient(to top, rgba(61, 47, 40, 0.55) 0%, transparent 100%);
-    animation: tapHintBreath 3s ease-in-out infinite;
-    pointer-events: none;
+    display: none;
   }
 
-  /* Hide hint once tapped */
   .collection-item.tapped::after {
     display: none;
   }
 
-  @keyframes tapHintBreath {
-    0%, 100% { opacity: 0.55; }
-    50%      { opacity: 1; }
+  /* Hide tap prompt — no longer needed */
+  .collection-tap-prompt {
+    display: none;
   }
 
-  /* Tap prompt text above grid */
-  .collection-tap-prompt {
-    display: block;
-    text-align: center;
-    font-family: var(--font-en);
-    font-size: 0.7rem;
-    font-weight: 300;
-    letter-spacing: 0.2em;
-    color: var(--taupe);
-    margin-bottom: 1.2rem;
-    opacity: 0.6;
+  /* Hide auto-overlay when tapped (tap-overlay replaces it) */
+  .collection-item.tapped .collection-auto-overlay {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .collection-subtitle {

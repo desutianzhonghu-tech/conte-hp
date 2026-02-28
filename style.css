@@ -369,11 +369,11 @@ body.divider-gentle .divider--subtle::before {
 .collection-auto-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  padding: 1.2rem 0.8rem 0.8rem;
-  background: linear-gradient(to top, rgba(61,47,40,0.85) 0%, transparent 100%);
+  padding: 0.6rem 0.5rem 0.45rem;
+  background: linear-gradient(to top, rgba(61,47,40,0.88) 0%, rgba(61,47,40,0.4) 70%, transparent 100%);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.15rem;
   z-index: 1;
   transition: opacity 0.3s ease;
   animation: autoOverlayIn 0.8s ease both;
@@ -381,28 +381,32 @@ body.divider-gentle .divider--subtle::before {
 
 .collection-auto-overlay .auto-name {
   font-family: var(--font-ja);
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   font-weight: 400;
   color: #faf9f7;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .collection-auto-overlay .auto-price {
   font-family: var(--font-en);
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   font-weight: 300;
   color: rgba(250,249,247,0.7);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 .collection-auto-overlay .auto-buy {
   display: inline-block;
   font-family: var(--font-en);
-  font-size: 0.58rem;
+  font-size: 0.48rem;
   color: #faf9f7;
   text-decoration: none;
-  letter-spacing: 0.08em;
-  padding: 0.4em 1.1em;
+  letter-spacing: 0.06em;
+  padding: 0.3em 0.8em;
   border: 1px solid rgba(250,249,247,0.45);
   border-radius: 50px;
   align-self: flex-start;
@@ -1287,7 +1291,7 @@ body.divider-gentle #story::after {
     justify-content: flex-end;
     background: linear-gradient(to top, rgba(61, 47, 40, 0.75) 0%, transparent 60%);
     text-align: center;
-    padding: 1rem 0.8rem;
+    padding: 0.8rem 0.6rem;
     animation: tapOverlayIn 0.4s ease both;
   }
 
@@ -1298,19 +1302,29 @@ body.divider-gentle #story::after {
 
   .collection-tap-overlay .tap-name {
     color: #fff;
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     font-weight: 400;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.4rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
     animation: tapTextIn 0.5s ease 0.1s both;
+  }
+
+  .collection-tap-overlay .tap-price {
+    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--font-en);
+    font-size: 0.52rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+    animation: tapTextIn 0.5s ease 0.15s both;
   }
 
   .collection-tap-overlay .tap-buy {
     color: #fff;
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     font-weight: 300;
-    letter-spacing: 0.08em;
-    padding: 0.45em 1.1em;
+    letter-spacing: 0.06em;
+    padding: 0.35em 0.9em;
     border: 1px solid rgba(255, 255, 255, 0.7);
     background: rgba(255, 255, 255, 0.08);
     text-decoration: none;

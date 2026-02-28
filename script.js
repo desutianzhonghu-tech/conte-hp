@@ -173,7 +173,7 @@ function initModal() {
           const overlay = document.createElement('div');
           overlay.className = 'collection-tap-overlay';
           let tapHtml = '<span class="tap-name">' + data.ja + ' / ' + data.en + '</span>';
-          if (priceText) tapHtml += '<span class="tap-price" style="color:#fff;font-family:var(--font-en);font-size:0.7rem;font-weight:300;letter-spacing:0.1em;opacity:0.8;">' + priceText + '</span>';
+          if (priceText) tapHtml += '<span class="tap-price">' + priceText + '</span>';
           if (isSoldOut) {
             tapHtml += '<span class="collection-sold-out">sold out</span>';
           } else {

@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flipbook - conte.jpeg</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN",sans-serif;background:#faf9f7;color:#3d2f28;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.header{text-align:center;padding:20px 16px 12px;border-bottom:1px solid #e8e2dc;background:#fff}
+.header h1{font-size:20px;font-weight:300;color:#3d2f28;letter-spacing:1px}
+.header .sub{font-size:11px;color:#6b5d54;margin-top:2px;font-weight:300}
+.main{max-width:640px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid #e8e2dc;border-radius:12px;padding:20px;margin-bottom:16px}
+h2{font-size:16px;font-weight:500;margin-bottom:14px;color:#3d2f28}
+label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;min-height:44px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#3d2f28;color:#fff}
+.btn-primary:hover{background:#5a4a42}
+.btn-secondary{background:#f0ebe5;color:#3d2f28}
+.btn-secondary:hover{background:#e8e2dc}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Drop zone */
+.flipbook-drop{border:2px dashed #e8e2dc;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;color:#6b5d54;font-size:14px;transition:border-color .2s}
+.flipbook-drop:hover,.flipbook-drop.dragover{border-color:#6b5d54}
+.flipbook-drop .icon{font-size:36px;opacity:.4;margin-bottom:8px}
+.flipbook-drop .hint{margin-top:6px;font-size:12px;color:#999}
+
+/* Preview thumbs */
+.preview-list{display:flex;gap:4px;flex-wrap:wrap;margin-top:12px}
+.flip-thumb{position:relative;width:56px;height:56px;overflow:hidden;border-radius:4px;background:#f0ebe5;cursor:grab;flex-shrink:0}
+.flip-thumb img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.flip-thumb .num{position:absolute;bottom:1px;right:3px;font-size:9px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.flip-thumb.dragging{opacity:.4}
+.flip-thumb.drag-over{outline:2px solid #3d2f28}
+.file-count{font-size:13px;color:#6b5d54;margin-top:10px}
+.sort-hint{font-size:11px;color:#999;margin-top:6px}
+
+/* Tabs */
+.edit-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid #e8e2dc;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.edit-tab{padding:10px 14px;border:none;background:none;font-size:13px;font-weight:500;color:#6b5d54;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:44px;transition:color .2s,border-color .2s}
+.edit-tab:hover{color:#3d2f28}
+.edit-tab.active{color:#3d2f28;border-bottom-color:#3d2f28}
+.edit-panel{display:none;padding-top:4px}
+.edit-panel.active{display:block}
+
+/* Speed buttons */
+.speed-options{display:flex;gap:8px;flex-wrap:wrap}
+.speed-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 14px;border:2px solid #e8e2dc;border-radius:10px;background:#fff;font-size:14px;font-weight:500;color:#3d2f28;cursor:pointer;min-height:44px;transition:border-color .2s,background .2s}
+.speed-btn span{font-size:11px;font-weight:400;color:#999}
+.speed-btn:hover{border-color:#6b5d54}
+.speed-btn.active{border-color:#3d2f28;background:#3d2f28;color:#fff}
+.speed-btn.active span{color:#d4c5b0}
+
+/* Option grids */
+.opt-grid{display:flex;gap:8px;flex-wrap:wrap}
+.opt-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:2px solid #e8e2dc;border-radius:10px;background:#fff;cursor:pointer;font-size:12px;color:#6b5d54;min-width:72px;min-height:44px;transition:border-color .2s}
+.opt-btn:hover{border-color:#6b5d54}
+.opt-btn.active{border-color:#3d2f28;color:#3d2f28;font-weight:500}
+.opt-swatch{width:44px;height:44px;border-radius:8px}
+.opt-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:14px;background:#f0ebe5;border-radius:8px;color:#3d2f28}
+
+/* Frame preview boxes */
+.frame-box{width:44px;height:44px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.frame-inner{width:70%;height:70%;background:linear-gradient(135deg,#e8d5b7,#c0a882);border-radius:2px}
+
+/* BG color */
+.bg-row{display:flex;gap:8px;margin-top:12px}
+.bg-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e8e2dc;cursor:pointer;transition:border-color .2s,transform .1s;min-width:32px}
+.bg-dot:hover{transform:scale(1.1)}
+.bg-dot.active{border-color:#3d2f28;box-shadow:0 0 0 2px #fff,0 0 0 4px #3d2f28}
+
+/* Border width */
+.range-group{margin-top:14px}
+.range-group input[type=range]{width:100%;accent-color:#3d2f28}
+
+/* Size preview */
+.size-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:#f0ebe5;border-radius:4px;border:1px solid #e8e2dc;color:#3d2f28}
+.detected-size{font-size:12px;color:#7a9e7e;margin-top:10px}
+
+/* Generate */
+.gen-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid #e8e2dc;border-top-color:#3d2f28;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{display:none;align-items:center;gap:10px;color:#6b5d54;font-size:13px}
+.loading.show{display:flex}
+
+/* Progress */
+.progress-bar{width:100%;height:6px;background:#e8e2dc;border-radius:3px;margin-top:10px;overflow:hidden;display:none}
+.progress-bar.show{display:block}
+.progress-fill{height:100%;background:#3d2f28;border-radius:3px;transition:width .2s}
+
+/* Result */
+.result{display:none}
+.result.show{display:block}
+.result video{width:100%;max-height:500px;border-radius:8px;background:#000}
+.result-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.result-actions a{text-decoration:none}
+
+/* Responsive */
+@media(max-width:480px){
+  .main{padding:12px}
+  .card{padding:16px}
+  .speed-btn{padding:10px 12px;font-size:13px}
+  .opt-btn{min-width:64px;padding:8px}
+  .flip-thumb{width:48px;height:48px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>conte.jpeg</h1>
+  <div class="sub">Flipbook Video Maker</div>
+</div>
+
+<div class="main">
+
+<!-- Step 1: Upload -->
+<div class="card" id="stepUpload">
+  <h2>1. 写真を選択</h2>
+  <div class="flipbook-drop" id="dropArea">
+    <div class="icon">&#128247;</div>
+    <div>タップして選択 または ドラッグ&ドロップ</div>
+    <div class="hint">JPG / PNG 対応 ・ ファイル名順に自動ソート</div>
+    <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+  </div>
+  <div class="file-count" id="fileCount"></div>
+  <div id="previewArea"></div>
+</div>
+
+<!-- Step 2: Edit -->
+<div class="card" id="stepEdit" style="display:none">
+  <h2>2. 編集</h2>
+
+  <div class="edit-tabs">
+    <button class="edit-tab active" data-tab="speed">速度</button>
+    <button class="edit-tab" data-tab="filter">フィルター</button>
+    <button class="edit-tab" data-tab="frame">フレーム</button>
+    <button class="edit-tab" data-tab="transition">トランジション</button>
+    <button class="edit-tab" data-tab="size">サイズ</button>
+  </div>
+
+  <!-- Speed -->
+  <div class="edit-panel active" id="panel-speed">
+    <label>表示速度</label>
+    <div class="speed-options">
+      <button class="speed-btn" data-fps="30">0.03秒<span>超高速</span></button>
+      <button class="speed-btn" data-fps="20">0.05秒<span>高速</span></button>
+      <button class="speed-btn active" data-fps="12">0.08秒<span>パラパラ</span></button>
+      <button class="speed-btn" data-fps="10">0.1秒<span>標準</span></button>
+      <button class="speed-btn" data-fps="5">0.2秒<span>ゆっくり</span></button>
+      <button class="speed-btn" data-fps="3">0.33秒<span>スロー</span></button>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="edit-panel" id="panel-filter">
+    <label>カラーフィルター</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-filter="none"><div class="opt-swatch" style="background:linear-gradient(135deg,#e8d5b7,#c0a882)"></div><span>なし</span></button>
+      <button class="opt-btn" data-filter="conte"><div class="opt-swatch" style="background:linear-gradient(135deg,#c9a96e,#8b6f4e)"></div><span>conte</span></button>
+      <button class="opt-btn" data-filter="warm"><div class="opt-swatch" style="background:linear-gradient(135deg,#e8a87c,#d4856a)"></div><span>Warm</span></button>
+      <button class="opt-btn" data-filter="cool"><div class="opt-swatch" style="background:linear-gradient(135deg,#7eb8c9,#5a8fa0)"></div><span>Cool</span></button>
+      <button class="opt-btn" data-filter="bw"><div class="opt-swatch" style="background:linear-gradient(135deg,#aaa,#555)"></div><span>B&W</span></button>
+      <button class="opt-btn" data-filter="vintage"><div class="opt-swatch" style="background:linear-gradient(135deg,#c9b896,#a08b6e)"></div><span>Vintage</span></button>
+      <button class="opt-btn" data-filter="high_contrast"><div class="opt-swatch" style="background:linear-gradient(135deg,#f0f0f0,#1a1a1a)"></div><span>Hi-Con</span></button>
+      <button class="opt-btn" data-filter="soft"><div class="opt-swatch" style="background:linear-gradient(135deg,#f0e6d8,#ddd0c0)"></div><span>Soft</span></button>
+    </div>
+  </div>
+
+  <!-- Frame -->
+  <div class="edit-panel" id="panel-frame">
+    <label>フレーム・ボーダー</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-border="none"><div class="frame-box"><div class="frame-inner"></div></div><span>なし</span></button>
+      <button class="opt-btn" data-border="white"><div class="frame-box" style="background:#fff;padding:5px"><div class="frame-inner"></div></div><span>白枠</span></button>
+      <button class="opt-btn" data-border="black"><div class="frame-box" style="background:#1a1a1a;padding:5px"><div class="frame-inner"></div></div><span>黒枠</span></button>
+      <button class="opt-btn" data-border="blur"><div class="frame-box" style="background:linear-gradient(135deg,#d4c5b0,#c0a882);padding:5px;filter:blur(1px)"><div class="frame-inner" style="filter:blur(0)"></div></div><span>ぼかし背景</span></button>
+    </div>
+    <div class="range-group" id="borderWidthGroup" style="display:none">
+      <label>枠の太さ: <span id="borderWidthValue">5</span>%</label>
+      <input type="range" id="borderWidth" min="2" max="15" value="5">
+    </div>
+    <div style="margin-top:12px">
+      <label>背景色（フレームなし時）</label>
+      <div class="bg-row">
+        <button class="bg-dot active" data-bg="#000000" style="background:#000"></button>
+        <button class="bg-dot" data-bg="#FFFFFF" style="background:#fff"></button>
+        <button class="bg-dot" data-bg="#3d2f28" style="background:#3d2f28"></button>
+        <button class="bg-dot" data-bg="#faf9f7" style="background:#faf9f7"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transition -->
+  <div class="edit-panel" id="panel-transition">
+    <label>トランジション</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-transition="none"><div class="opt-icon">A|B</div><span>なし</span></button>
+      <button class="opt-btn" data-transition="fade"><div class="opt-icon">A~B</div><span>フェード</span></button>
+      <button class="opt-btn" data-transition="flash"><div class="opt-icon">A&#9889;B</div><span>フラッシュ</span></button>
+    </div>
+    <p style="font-size:12px;color:#999;margin-top:10px">※ トランジション使用時は生成に時間がかかります</p>
+  </div>
+
+  <!-- Size -->
+  <div class="edit-panel" id="panel-size">
+    <label>動画サイズ</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-size="auto"><div class="size-icon">AUTO</div><span>自動検出</span></button>
+      <button class="opt-btn" data-size="1080x1920"><div class="size-icon" style="width:28px;height:44px"></div><span>9:16</span></button>
+      <button class="opt-btn" data-size="1080x1080"><div class="size-icon" style="width:38px;height:38px"></div><span>1:1</span></button>
+      <button class="opt-btn" data-size="1920x1080"><div class="size-icon" style="width:44px;height:28px"></div><span>16:9</span></button>
+    </div>
+    <div class="detected-size" id="detectedSize"></div>
+  </div>
+</div>
+
+<!-- Step 3: Generate -->
+<div class="card" id="stepGenerate" style="display:none">
+  <div class="gen-row">
+    <button class="btn btn-primary" id="btnGenerate">動画を生成する</button>
+    <div class="loading" id="loadingOverlay">
+      <div class="spinner"></div>
+      <span id="loadingText">動画を生成中...</span>
+    </div>
+  </div>
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- Result -->
+<div class="card result" id="resultCard">
+  <h2>完成</h2>
+  <video id="resultVideo" controls loop playsinline></video>
+  <div class="result-actions">
+    <a id="downloadLink" class="btn btn-primary" download="flipbook.webm">ダウンロード</a>
+    <button class="btn btn-secondary" id="btnRetry">設定を変えてもう一度</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  // --- Elements ---
+  var dropArea = document.getElementById('dropArea');
+  var fileInput = document.getElementById('fileInput');
+  var fileCount = document.getElementById('fileCount');
+  var previewArea = document.getElementById('previewArea');
+  var stepEdit = document.getElementById('stepEdit');
+  var stepGenerate = document.getElementById('stepGenerate');
+  var btnGenerate = document.getElementById('btnGenerate');
+  var loadingOverlay = document.getElementById('loadingOverlay');
+  var loadingText = document.getElementById('loadingText');
+  var progressBar = document.getElementById('progressBar');
+  var progressFill = document.getElementById('progressFill');
+  var resultCard = document.getElementById('resultCard');
+  var resultVideo = document.getElementById('resultVideo');
+  var downloadLink = document.getElementById('downloadLink');
+  var btnRetry = document.getElementById('btnRetry');
+  var detectedSize = document.getElementById('detectedSize');
+  var borderWidthInput = document.getElementById('borderWidth');
+  var borderWidthValue = document.getElementById('borderWidthValue');
+  var borderWidthGroup = document.getElementById('borderWidthGroup');
+
+  var selectedFiles = [];
+  var settings = {
+    fps: 12,
+    filter: 'none',
+    border: 'none',
+    borderWidth: 5,
+    bgColor: '#000000',
+    transition: 'none',
+    sizeMode: 'auto',
+    width: 1080,
+    height: 1920
+  };
+
+  // --- File Selection ---
+  dropArea.addEventListener('click', function(){ fileInput.click(); });
+  dropArea.addEventListener('dragover', function(e){
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
+  dropArea.addEventListener('dragleave', function(){
+    dropArea.classList.remove('dragover');
+  });
+  dropArea.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', function(){ handleFiles(fileInput.files); });
+
+  function handleFiles(files){
+    var arr = Array.from(files).filter(function(f){ return f.type.startsWith('image/'); });
+    if(arr.length === 0) return;
+    selectedFiles = arr.sort(function(a,b){ return a.name.localeCompare(b.name, undefined, {numeric:true}); });
+    fileCount.textContent = selectedFiles.length + ' 枚の写真を選択中';
+    stepEdit.style.display = 'block';
+    stepGenerate.style.display = 'block';
+    renderPreview();
+    detectAspectRatio();
+  }
+
+  function renderPreview(){
+    if(!selectedFiles.length){ previewArea.innerHTML=''; return; }
+    var max = Math.min(selectedFiles.length, 60);
+    var html = '<div class="preview-list" id="sortableList">';
+    for(var i=0;i<max;i++){
+      html += '<div class="flip-thumb" draggable="true" data-index="'+i+'">';
+      html += '<img data-index="'+i+'">';
+      html += '<div class="num">'+(i+1)+'</div></div>';
+    }
+    if(selectedFiles.length > max){
+      html += '<div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;background:#f0ebe5;border-radius:4px;font-size:12px;color:#6b5d54">+'+(selectedFiles.length-max)+'</div>';
+    }
+    html += '</div><div class="sort-hint">ドラッグで並び替え可能</div>';
+    previewArea.innerHTML = html;
+
+    previewArea.querySelectorAll('img[data-index]').forEach(function(img){
+      var idx = parseInt(img.getAttribute('data-index'));
+      var reader = new FileReader();
+      reader.onload = function(e){ img.src = e.target.result; };
+      reader.readAsDataURL(selectedFiles[idx]);
+    });
+    initSortable();
+  }
+
+  function initSortable(){
+    var list = document.getElementById('sortableList');
+    if(!list) return;
+    var dragSrc = null;
+    list.querySelectorAll('.flip-thumb').forEach(function(item){
+      item.addEventListener('dragstart', function(e){
+        dragSrc = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', function(){
+        this.classList.remove('dragging');
+        list.querySelectorAll('.flip-thumb').forEach(function(el){ el.classList.remove('drag-over'); });
+      });
+      item.addEventListener('dragover', function(e){
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        this.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+      item.addEventListener('drop', function(e){
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        if(dragSrc === this) return;
+        var fromIdx = parseInt(dragSrc.getAttribute('data-index'));
+        var toIdx = parseInt(this.getAttribute('data-index'));
+        var moved = selectedFiles.splice(fromIdx, 1)[0];
+        selectedFiles.splice(toIdx, 0, moved);
+        renderPreview();
+      });
+
+      // Touch support for mobile drag
+      var touchStartY, touchStartX, touchClone;
+      item.addEventListener('touchstart', function(e){
+        dragSrc = this;
+        var touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }, {passive:true});
+      item.addEventListener('touchmove', function(e){
+        e.preventDefault();
+      }, {passive:false});
+      item.addEventListener('touchend', function(e){
+        if(!dragSrc) return;
+        var touch = e.changedTouches[0];
+        var el = document.elementFromPoint(touch.clientX, touch.clientY);
+        if(el){
+          var target = el.closest('.flip-thumb');
+          if(target && target !== dragSrc){
+            var fromIdx = parseInt(dragSrc.getAttribute('data-index'));
+            var toIdx = parseInt(target.getAttribute('data-index'));
+            var moved = selectedFiles.splice(fromIdx, 1)[0];
+            selectedFiles.splice(toIdx, 0, moved);
+            renderPreview();
+          }
+        }
+        dragSrc = null;
+      });
+    });
+  }
+
+  function detectAspectRatio(){
+    if(!selectedFiles.length) return;
+    var img = new Image();
+    var url = URL.createObjectURL(selectedFiles[0]);
+    img.onload = function(){
+      URL.revokeObjectURL(url);
+      settings.width = img.naturalWidth;
+      settings.height = img.naturalHeight;
+      detectedSize.textContent = '検出: ' + img.naturalWidth + ' × ' + img.naturalHeight + 'px';
+    };
+    img.src = url;
+  }
+
+  // --- Tabs ---
+  document.querySelectorAll('.edit-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.edit-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.edit-panel').forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // --- Speed ---
+  document.querySelectorAll('.speed-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.speed-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.fps = parseInt(btn.dataset.fps);
+    });
+  });
+
+  // --- Filter ---
+  document.querySelectorAll('[data-filter]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('[data-filter]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.filter = btn.dataset.filter;
+    });
+  });
+
+  // --- Frame ---
+  document.querySelectorAll('[data-border]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('[data-border]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.border = btn.dataset.border;
+      borderWidthGroup.style.display = (btn.dataset.border !== 'none') ? 'block' : 'none';
+    });
+  });
+  borderWidthInput.addEventListener('input', function(){
+    settings.borderWidth = parseInt(this.value);
+    borderWidthValue.textContent = this.value;
+  });
+  document.querySelectorAll('.bg-dot').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.bg-dot').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.bgColor = btn.dataset.bg;
+    });
+  });
+
+  // --- Transition ---
+  document.querySelectorAll('[data-transition]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('[data-transition]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.transition = btn.dataset.transition;
+    });
+  });
+
+  // --- Size ---
+  document.querySelectorAll('[data-size]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('[data-size]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings.sizeMode = btn.dataset.size;
+      if(btn.dataset.size !== 'auto'){
+        var parts = btn.dataset.size.split('x');
+        settings.width = parseInt(parts[0]);
+        settings.height = parseInt(parts[1]);
+      } else {
+        detectAspectRatio();
+      }
+    });
+  });
+
+  // --- Canvas Filter Functions ---
+  function applyFilter(ctx, w, h, filterName){
+    if(filterName === 'none') return;
+    if(filterName === 'soft'){
+      // Use CSS filter approach via temporary canvas
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = w; tmpCanvas.height = h;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.filter = 'blur(0.5px) brightness(1.05) contrast(0.9)';
+      tmpCtx.drawImage(ctx.canvas, 0, 0);
+      ctx.drawImage(tmpCanvas, 0, 0);
+      return;
+    }
+    if(filterName === 'high_contrast'){
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = w; tmpCanvas.height = h;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.filter = 'contrast(1.5) saturate(1.2)';
+      tmpCtx.drawImage(ctx.canvas, 0, 0);
+      ctx.drawImage(tmpCanvas, 0, 0);
+      return;
+    }
+
+    var imageData = ctx.getImageData(0, 0, w, h);
+    var d = imageData.data;
+    var i, r, g, b, gray;
+
+    if(filterName === 'warm'){
+      for(i=0;i<d.length;i+=4){
+        d[i]   = Math.min(255, d[i]*1.1 + 10);    // R up
+        d[i+2] = Math.min(255, d[i+2]*0.9);        // B down
+      }
+    } else if(filterName === 'cool'){
+      for(i=0;i<d.length;i+=4){
+        d[i]   = Math.min(255, d[i]*0.9);           // R down
+        d[i+2] = Math.min(255, d[i+2]*1.1 + 10);   // B up
+      }
+    } else if(filterName === 'bw'){
+      for(i=0;i<d.length;i+=4){
+        gray = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114;
+        d[i] = d[i+1] = d[i+2] = gray;
+      }
+    } else if(filterName === 'vintage'){
+      for(i=0;i<d.length;i+=4){
+        d[i]   = Math.min(255, d[i]*1.05 + 15);
+        d[i+1] = Math.min(255, d[i+1]*0.95 + 5);
+        d[i+2] = Math.min(255, d[i+2]*0.85);
+      }
+      // Apply contrast reduction
+      ctx.putImageData(imageData, 0, 0);
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = w; tmpCanvas.height = h;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.filter = 'contrast(0.85)';
+      tmpCtx.drawImage(ctx.canvas, 0, 0);
+      ctx.drawImage(tmpCanvas, 0, 0);
+      return;
+    } else if(filterName === 'conte'){
+      for(i=0;i<d.length;i+=4){
+        d[i]   = Math.min(255, d[i]*1.08 + 8);
+        d[i+1] = Math.min(255, d[i+1]*0.98);
+        d[i+2] = Math.min(255, d[i+2]*0.88);
+      }
+      ctx.putImageData(imageData, 0, 0);
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = w; tmpCanvas.height = h;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.filter = 'contrast(1.1)';
+      tmpCtx.drawImage(ctx.canvas, 0, 0);
+      ctx.drawImage(tmpCanvas, 0, 0);
+      return;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  // --- Process Image to Canvas ---
+  function processImage(img, width, height){
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext('2d');
+
+    var borderStyle = settings.border;
+    var borderWidthPct = settings.borderWidth;
+    var bgHex = settings.bgColor;
+
+    // Parse bg color
+    var bgR = parseInt(bgHex.substr(1,2),16);
+    var bgG = parseInt(bgHex.substr(3,2),16);
+    var bgB = parseInt(bgHex.substr(5,2),16);
+
+    var bw = 0, innerW = width, innerH = height;
+    if(borderStyle !== 'none'){
+      bw = Math.floor(Math.min(width, height) * borderWidthPct / 100);
+      innerW = width - bw*2;
+      innerH = height - bw*2;
+    }
+
+    // Fit image maintaining aspect ratio
+    var imgW = img.naturalWidth || img.width;
+    var imgH = img.naturalHeight || img.height;
+    var scale = Math.min(innerW / imgW, innerH / imgH);
+    var newW = Math.floor(imgW * scale);
+    var newH = Math.floor(imgH * scale);
+
+    if(borderStyle === 'blur'){
+      // Draw blurred background: stretch image to fill, then blur
+      // Step 1: draw stretched image
+      var bgCanvas = document.createElement('canvas');
+      bgCanvas.width = width; bgCanvas.height = height;
+      var bgCtx = bgCanvas.getContext('2d');
+      // Draw image stretched to fill
+      var fillScale = Math.max(width/imgW, height/imgH);
+      var fw = Math.floor(imgW*fillScale);
+      var fh = Math.floor(imgH*fillScale);
+      var fx = Math.floor((width-fw)/2);
+      var fy = Math.floor((height-fh)/2);
+      bgCtx.drawImage(img, fx, fy, fw, fh);
+
+      // Approximate blur: downscale then upscale
+      var smallW = Math.max(1, Math.floor(width/20));
+      var smallH = Math.max(1, Math.floor(height/20));
+      var smallCanvas = document.createElement('canvas');
+      smallCanvas.width = smallW; smallCanvas.height = smallH;
+      var smallCtx = smallCanvas.getContext('2d');
+      smallCtx.drawImage(bgCanvas, 0, 0, smallW, smallH);
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(smallCanvas, 0, 0, width, height);
+
+      // Draw sharp image centered
+      var ox = Math.floor((width - newW)/2);
+      var oy = Math.floor((height - newH)/2);
+
+      // First apply filter to a temp canvas with the image
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = newW; tmpCanvas.height = newH;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.drawImage(img, 0, 0, newW, newH);
+      applyFilter(tmpCtx, newW, newH, settings.filter);
+
+      ctx.drawImage(tmpCanvas, ox, oy);
+    } else if(borderStyle === 'white' || borderStyle === 'black'){
+      var borderColor = borderStyle === 'white' ? '#ffffff' : '#000000';
+      // Fill border
+      ctx.fillStyle = borderColor;
+      ctx.fillRect(0, 0, width, height);
+      // Fill inner bg
+      ctx.fillStyle = bgHex;
+      ctx.fillRect(bw, bw, innerW, innerH);
+      // Draw image centered in inner area
+      var ox = bw + Math.floor((innerW - newW)/2);
+      var oy = bw + Math.floor((innerH - newH)/2);
+
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = newW; tmpCanvas.height = newH;
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.drawImage(img, 0, 0, newW, newH);
+      applyFilter(tmpCtx, newW, newH, settings.filter);
+
+      ctx.drawImage(tmpCanvas, ox, oy);
+    } else {
+      // No border
+      ctx.fillStyle = bgHex;
+      ctx.fillRect(0, 0, width, height);
+      var ox = Math.floor((width - newW)/2);
+      var oy = Math.floor((height - newH)/2);
+
+      ctx.drawImage(img, ox, oy, newW, newH);
+      // Apply filter to the drawn area
+      // We need to apply to the whole canvas so the bg stays clean
+      // Approach: draw to tmp, filter, paste back
+      if(settings.filter !== 'none'){
+        var tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = newW; tmpCanvas.height = newH;
+        var tmpCtx = tmpCanvas.getContext('2d');
+        tmpCtx.drawImage(img, 0, 0, newW, newH);
+        applyFilter(tmpCtx, newW, newH, settings.filter);
+        // Re-draw bg + filtered image
+        ctx.fillStyle = bgHex;
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(tmpCanvas, ox, oy);
+      }
+    }
+
+    return canvas;
+  }
+
+  // --- Load all images as HTMLImageElement ---
+  function loadImages(files){
+    return Promise.all(files.map(function(file){
+      return new Promise(function(resolve, reject){
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function(){
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = function(){
+          URL.revokeObjectURL(url);
+          reject(new Error('画像の読み込みに失敗: ' + file.name));
+        };
+        img.src = url;
+      });
+    }));
+  }
+
+  // --- Generate Video ---
+  btnGenerate.addEventListener('click', async function(){
+    if(!selectedFiles.length) return;
+
+    btnGenerate.disabled = true;
+    loadingOverlay.classList.add('show');
+    progressBar.classList.add('show');
+    progressFill.style.width = '0%';
+    resultCard.classList.remove('show');
+
+    try {
+      loadingText.textContent = '画像を読み込み中...';
+      var images = await loadImages(selectedFiles);
+
+      // Determine dimensions
+      var width = settings.width;
+      var height = settings.height;
+      if(settings.sizeMode === 'auto'){
+        var firstW = images[0].naturalWidth;
+        var firstH = images[0].naturalHeight;
+        var maxDim = 1920;
+        if(Math.max(firstW, firstH) > maxDim){
+          var s = maxDim / Math.max(firstW, firstH);
+          width = Math.floor(firstW * s);
+          height = Math.floor(firstH * s);
+        } else {
+          width = firstW;
+          height = firstH;
+        }
+        // Even dimensions
+        width += width % 2;
+        height += height % 2;
+      }
+
+      loadingText.textContent = '画像を処理中...';
+
+      // Process all images
+      var processed = [];
+      for(var i=0;i<images.length;i++){
+        processed.push(processImage(images[i], width, height));
+        progressFill.style.width = Math.floor((i+1)/images.length*30) + '%';
+      }
+
+      loadingText.textContent = '動画を生成中...';
+
+      // --- Record video using MediaRecorder ---
+      var recordCanvas = document.createElement('canvas');
+      recordCanvas.width = width;
+      recordCanvas.height = height;
+      var recordCtx = recordCanvas.getContext('2d');
+
+      // Build frame sequence
+      var frames = [];
+      var fps = settings.fps;
+      var transition = settings.transition;
+      var transitionFrames = 3;
+
+      if(transition === 'none'){
+        // Simple: one frame per image
+        for(var i=0;i<processed.length;i++){
+          frames.push({type:'image', index:i});
+        }
+      } else {
+        var actualFps = Math.max(fps, 30);
+        var framesPerImage = Math.max(1, Math.floor(actualFps / fps));
+
+        for(var i=0;i<processed.length;i++){
+          // Hold frames
+          for(var f=0;f<framesPerImage;f++){
+            frames.push({type:'image', index:i});
+          }
+          // Transition frames
+          if(i < processed.length - 1 && transitionFrames > 0){
+            for(var t=1;t<=transitionFrames;t++){
+              var alpha = t / (transitionFrames + 1);
+              frames.push({type:'transition', from:i, to:i+1, alpha:alpha, kind:transition});
+            }
+          }
+        }
+        fps = actualFps;
+      }
+
+      // Use MediaRecorder to capture
+      var stream = recordCanvas.captureStream(0); // 0 = manual frame control
+      var track = stream.getVideoTracks()[0];
+
+      // Try VP9 first, fallback to VP8, then default
+      var mimeType = 'video/webm;codecs=vp9';
+      if(!MediaRecorder.isTypeSupported(mimeType)){
+        mimeType = 'video/webm;codecs=vp8';
+        if(!MediaRecorder.isTypeSupported(mimeType)){
+          mimeType = 'video/webm';
+        }
+      }
+
+      var recorder = new MediaRecorder(stream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: 8000000
+      });
+
+      var chunks = [];
+      recorder.ondataavailable = function(e){
+        if(e.data.size > 0) chunks.push(e.data);
+      };
+
+      var recordDone = new Promise(function(resolve){
+        recorder.onstop = function(){ resolve(); };
+      });
+
+      recorder.start();
+
+      // Draw each frame with timing
+      var frameInterval = 1000 / fps;
+
+      for(var fi=0;fi<frames.length;fi++){
+        var frame = frames[fi];
+
+        if(frame.type === 'image'){
+          recordCtx.drawImage(processed[frame.index], 0, 0);
+        } else if(frame.type === 'transition'){
+          var alpha = frame.alpha;
+          if(frame.kind === 'fade'){
+            recordCtx.globalAlpha = 1;
+            recordCtx.drawImage(processed[frame.from], 0, 0);
+            recordCtx.globalAlpha = alpha;
+            recordCtx.drawImage(processed[frame.to], 0, 0);
+            recordCtx.globalAlpha = 1;
+          } else if(frame.kind === 'flash'){
+            if(alpha < 0.5){
+              recordCtx.globalAlpha = 1;
+              recordCtx.drawImage(processed[frame.from], 0, 0);
+              recordCtx.globalAlpha = alpha * 2;
+              recordCtx.fillStyle = '#ffffff';
+              recordCtx.fillRect(0, 0, width, height);
+              recordCtx.globalAlpha = 1;
+            } else {
+              recordCtx.globalAlpha = 1;
+              recordCtx.fillStyle = '#ffffff';
+              recordCtx.fillRect(0, 0, width, height);
+              recordCtx.globalAlpha = (alpha - 0.5) * 2;
+              recordCtx.drawImage(processed[frame.to], 0, 0);
+              recordCtx.globalAlpha = 1;
+            }
+          }
+        }
+
+        // Request frame capture
+        if(track.requestFrame) track.requestFrame();
+
+        // Progress update
+        var pct = 30 + Math.floor((fi+1)/frames.length*65);
+        progressFill.style.width = pct + '%';
+        loadingText.textContent = '動画を生成中... ' + (fi+1) + '/' + frames.length;
+
+        // Wait for frame duration
+        await new Promise(function(r){ setTimeout(r, frameInterval); });
+      }
+
+      // Stop recording
+      recorder.stop();
+      await recordDone;
+
+      progressFill.style.width = '100%';
+      loadingText.textContent = '完了!';
+
+      var blob = new Blob(chunks, {type: mimeType});
+      var url = URL.createObjectURL(blob);
+
+      resultVideo.src = url;
+      downloadLink.href = url;
+      resultCard.classList.add('show');
+      resultCard.scrollIntoView({behavior:'smooth'});
+
+    } catch(err){
+      alert('エラー: ' + err.message);
+      console.error(err);
+    } finally {
+      btnGenerate.disabled = false;
+      loadingOverlay.classList.remove('show');
+      progressBar.classList.remove('show');
+    }
+  });
+
+  btnRetry.addEventListener('click', function(){
+    resultCard.classList.remove('show');
+    stepEdit.scrollIntoView({behavior:'smooth'});
+  });
+
+})();
+</script>
+</body>
+</html>

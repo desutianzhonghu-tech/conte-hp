@@ -121,7 +121,8 @@ function initModal() {
     const priceText = item.querySelector('.collection-price')?.textContent || '';
     const isSoldOut = item.dataset.soldOut === 'true';
 
-    modalImg.src = item.querySelector('.collection-img-1').src;
+    const img2 = item.querySelector('.collection-img-2');
+    modalImg.src = (img2 && img2.src) ? img2.src : item.querySelector('.collection-img-1').src;
     modalImg.alt = `${data.ja} / ${data.en}`;
     modalJa.textContent = data.ja;
     modalEn.textContent = data.en;

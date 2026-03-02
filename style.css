@@ -14,9 +14,9 @@
   --taupe: #6b5d54;
   --cream: #faf9f7;
   --cream-dark: #f0eeeb;
-  --font-en: 'Cormorant Garamond', serif;
+  --font-en: 'Montserrat', sans-serif;
   --font-ja: 'Noto Serif JP', serif;
-  --font-logo: 'EB Garamond', 'Cormorant Garamond', serif;
+  --font-logo: 'EB Garamond', 'Montserrat', sans-serif;
 }
 
 html {
@@ -397,9 +397,9 @@ body.divider-gentle .divider--subtle::before {
 .collection-auto-overlay .auto-price {
   font-family: var(--font-en);
   font-size: 0.65rem;
-  font-weight: 400;
+  font-weight: 300;
   color: #faf9f7;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   flex-shrink: 0;
 }
 
@@ -441,8 +441,8 @@ body.divider-gentle .divider--subtle::before {
   display: inline-block;
   font-family: var(--font-en);
   font-size: 0.8rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
+  font-weight: 300;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 1em 2.8em;
   border-radius: 50px;
@@ -733,9 +733,9 @@ body.divider-gentle .divider--subtle::before {
 .hero-cta {
   color: #fff;
   font-family: var(--font-en);
-  font-weight: 400;
+  font-weight: 300;
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 0.9em 2.5em;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -963,7 +963,8 @@ body.divider-gentle #story::after {
 
 #collection .section-title {
   font-family: var(--font-en);
-  letter-spacing: 0.15em;
+  font-weight: 300;
+  letter-spacing: 0.1em;
 }
 
 #story .section-title {
@@ -1132,7 +1133,7 @@ body.divider-gentle #story::after {
   font-family: var(--font-en);
   font-size: 0.9rem;
   font-weight: 300;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition-delay: 0.05s;
   margin-bottom: 1rem;
@@ -1197,8 +1198,9 @@ body.divider-gentle #story::after {
     display: inline-block;
     font-family: var(--font-en);
     font-size: 0.6rem;
+    font-weight: 300;
     color: #fff;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     padding: 0.35em 1em;
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: 50px;
@@ -1245,7 +1247,7 @@ body.divider-gentle #story::after {
   font-family: var(--font-en);
   font-size: 0.7rem;
   font-weight: 300;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.8);
   margin-top: 0.3rem;
@@ -1372,7 +1374,7 @@ body.divider-gentle #story::after {
   font-family: var(--font-en);
   font-size: 0.9rem;
   font-weight: 300;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--taupe);
   margin-bottom: 0.5rem;
@@ -1381,8 +1383,8 @@ body.divider-gentle #story::after {
 .modal-price {
   font-family: var(--font-en);
   font-size: 1.1rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
+  font-weight: 300;
+  letter-spacing: 0.1em;
   color: var(--taupe);
   margin-bottom: 1.2rem;
 }
@@ -1465,9 +1467,9 @@ body.divider-gentle #story::after {
 
 .process-step h3 {
   font-family: var(--font-en);
-  font-weight: 400;
+  font-weight: 300;
   font-size: 1.1rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
 
@@ -1849,6 +1851,7 @@ body.divider-gentle #footer::before {
 .footer-links a {
   font-family: var(--font-en);
   font-size: 0.85rem;
+  font-weight: 300;
   letter-spacing: 0.1em;
   opacity: 0.7;
   transition: opacity 0.3s ease;
@@ -1861,6 +1864,7 @@ body.divider-gentle #footer::before {
 .footer-copy {
   font-family: var(--font-en);
   font-size: 0.75rem;
+  font-weight: 300;
   opacity: 0.5;
   letter-spacing: 0.1em;
 }
@@ -1979,8 +1983,8 @@ body.divider-gentle #footer::before {
     color: var(--cream);
     font-family: var(--font-en);
     font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.18em;
+    font-weight: 300;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 

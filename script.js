@@ -149,12 +149,15 @@ function initModal() {
       statusEl.innerHTML = 'sold out';
       statusEl.style.display = '';
     } else if (isComingSoon) {
-      modalBuyBtn.style.display = 'none';
+      modalBuyBtn.style.display = '';
+      modalBuyBtn.href = buyHref;
+      modalBuyBtn.textContent = 'ストアでみる';
       statusEl.innerHTML = 'coming soon' + (releaseDate ? '<span class="release-date">' + releaseDate + '</span>' : '');
       statusEl.style.display = '';
     } else {
       modalBuyBtn.style.display = '';
       modalBuyBtn.href = buyHref;
+      modalBuyBtn.textContent = 'ストアでみる';
       statusEl.style.display = 'none';
     }
 
@@ -650,6 +653,9 @@ function initCollectionInfo() {
   const items = document.querySelectorAll('.collection-item');
 
   items.forEach(item => {
+    // Clean up any pre-existing overlays/bottom bars from saved HTML
+    item.querySelectorAll('.collection-item-bottom, .collection-auto-overlay, .collection-status-badge, .collection-drag-handle').forEach(el => el.remove());
+
     const nameJa = item.querySelector('.theme-name-ja')?.textContent || '';
     const priceEl = item.querySelector('.collection-price');
     const price = priceEl ? priceEl.textContent : '';
@@ -663,17 +669,17 @@ function initCollectionInfo() {
       const badge = document.createElement('div');
       badge.className = 'collection-status-badge sold-out';
       badge.innerHTML = '<span class="badge-line"></span> sold out <span class="badge-line"></span>';
-      item.style.position = 'relative';
       item.appendChild(badge);
     } else if (isComingSoon) {
       const badge = document.createElement('div');
       badge.className = 'collection-status-badge coming-soon';
-      badge.innerHTML = '<span class="badge-line"></span> coming soon <span class="badge-line"></span>';
-      item.style.position = 'relative';
+      let badgeHtml = '<span class="badge-line"></span> coming soon <span class="badge-line"></span>';
+      if (releaseDate) badgeHtml += '<span class="badge-date">' + releaseDate + '</span>';
+      badge.innerHTML = badgeHtml;
       item.appendChild(badge);
     }
 
-    // Build status HTML for overlay/bottom bar
+    // Build status HTML for PC bottom bar only
     let statusHtml = '';
     if (isSoldOut) {
       statusHtml = '<span class="collection-sold-out">sold out</span>';
@@ -682,16 +688,11 @@ function initCollectionInfo() {
     }
 
     if (isMobile || isTouch) {
-      // Mobile: create auto-overlay (always visible at bottom)
+      // Mobile: create auto-overlay (name + price only, badge handles status)
       const autoOverlay = document.createElement('div');
       autoOverlay.className = 'collection-auto-overlay';
       let html = '<span class="auto-name">' + nameJa + '</span>';
       html += '<span class="auto-price">' + price + '</span>';
-      if (isSoldOut || isComingSoon) {
-        html += statusHtml;
-      } else {
-        html += '<a class="auto-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
-      }
       autoOverlay.innerHTML = html;
       item.appendChild(autoOverlay);
     } else {
@@ -700,7 +701,7 @@ function initCollectionInfo() {
       bottom.className = 'collection-item-bottom';
       let html = '<span class="bottom-name">' + nameJa + '</span>';
       html += '<span class="bottom-price">' + price + '</span>';
-      if (isSoldOut || isComingSoon) {
+      if (isSoldOut) {
         html += statusHtml;
       } else {
         html += '<a class="bottom-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';

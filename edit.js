@@ -1143,7 +1143,9 @@
             if (releaseVal) item.dataset.releaseDate = releaseVal;
             const badge = document.createElement('div');
             badge.className = 'collection-status-badge coming-soon';
-            badge.innerHTML = '<span class="badge-line"></span> coming soon <span class="badge-line"></span>';
+            let badgeHtml = '<span class="badge-line"></span> coming soon <span class="badge-line"></span>';
+            if (releaseVal) badgeHtml += '<span class="badge-date">' + releaseVal + '</span>';
+            badge.innerHTML = badgeHtml;
             item.appendChild(badge);
           }
 
@@ -1216,8 +1218,10 @@
       if (autoOverlay) {
         let html = '<span class="auto-name">' + nameJa + '</span>';
         html += '<span class="auto-price">' + price + '</span>';
-        if (isSoldOut || isComingSoon) {
+        if (isSoldOut) {
           html += statusHtml;
+        } else if (isComingSoon) {
+          html += '<a class="auto-buy" href="' + buyLink + '" target="_blank" rel="noopener">ストアでみる →</a>';
         } else {
           html += '<a class="auto-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
         }
@@ -1229,8 +1233,10 @@
       bottomBars.forEach(bottom => {
         let html = '<span class="bottom-name">' + nameJa + '</span>';
         html += '<span class="bottom-price">' + price + '</span>';
-        if (isSoldOut || isComingSoon) {
+        if (isSoldOut) {
           html += statusHtml;
+        } else if (isComingSoon) {
+          html += '<a class="bottom-buy" href="' + buyLink + '" target="_blank" rel="noopener">ストアでみる →</a>';
         } else {
           html += '<a class="bottom-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
         }

@@ -1763,6 +1763,9 @@
       clone.querySelector('body')?.classList.remove('edit-mode');
       clone.querySelectorAll('[data-edited-file]').forEach(el => el.removeAttribute('data-edited-file'));
 
+      // Remove dynamically added modal-price elements (recreated by script.js on load)
+      clone.querySelectorAll('.modal-price').forEach(el => el.remove());
+
       // style tag injected by edit.js
       clone.querySelectorAll('style').forEach(s => {
         if (s.textContent.includes('edit-panel')) s.remove();

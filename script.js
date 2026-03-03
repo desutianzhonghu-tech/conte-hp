@@ -97,7 +97,8 @@ function initModal() {
   const modalBackdrop = modal.querySelector('.modal-backdrop');
   const modalBuyBtn = modal.querySelector('.modal-info .btn--primary');
 
-  // Create modal-price element (inserted after modal-theme-en)
+  // Remove any stale modal-price elements from previous saves, then create fresh one
+  modal.querySelectorAll('.modal-price').forEach(el => el.remove());
   const modalPrice = document.createElement('p');
   modalPrice.className = 'modal-price';
   modalEn.after(modalPrice);

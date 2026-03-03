@@ -98,6 +98,7 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
 .result video{width:100%;max-height:500px;border-radius:8px;background:#000}
 .result-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
 .result-actions a{text-decoration:none}
+.save-note{font-size:12px;color:#999;margin-top:8px}
 
 /* Responsive */
 @media(max-width:480px){
@@ -236,9 +237,11 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
   <h2>完成</h2>
   <video id="resultVideo" controls loop playsinline></video>
   <div class="result-actions">
-    <a id="downloadLink" class="btn btn-primary" download="flipbook.webm">ダウンロード</a>
+    <a id="downloadLink" class="btn btn-primary" download="flipbook.mp4">ダウンロード</a>
+    <button class="btn btn-primary" id="btnShare" style="display:none">共有・保存</button>
     <button class="btn btn-secondary" id="btnRetry">設定を変えてもう一度</button>
   </div>
+  <div class="save-note" id="saveNote" style="display:none"></div>
 </div>
 
 </div>
@@ -260,7 +263,11 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
   var resultCard = document.getElementById('resultCard');
   var resultVideo = document.getElementById('resultVideo');
   var downloadLink = document.getElementById('downloadLink');
+  var btnShare = document.getElementById('btnShare');
+  var saveNote = document.getElementById('saveNote');
   var btnRetry = document.getElementById('btnRetry');
+  var lastBlob = null;
+  var lastMimeType = '';
   var detectedSize = document.getElementById('detectedSize');
   var borderWidthInput = document.getElementById('borderWidth');
   var borderWidthValue = document.getElementById('borderWidthValue');
@@ -772,14 +779,25 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
       var stream = recordCanvas.captureStream(0); // 0 = manual frame control
       var track = stream.getVideoTracks()[0];
 
-      // Try VP9 first, fallback to VP8, then default
-      var mimeType = 'video/webm;codecs=vp9';
-      if(!MediaRecorder.isTypeSupported(mimeType)){
-        mimeType = 'video/webm;codecs=vp8';
-        if(!MediaRecorder.isTypeSupported(mimeType)){
-          mimeType = 'video/webm';
+      // Try MP4 first (iOS Safari), then VP9, VP8, WebM
+      var mimeType = '';
+      var mimeOptions = [
+        'video/mp4;codecs=avc1',
+        'video/mp4',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm'
+      ];
+      for(var mi=0;mi<mimeOptions.length;mi++){
+        if(MediaRecorder.isTypeSupported(mimeOptions[mi])){
+          mimeType = mimeOptions[mi];
+          break;
         }
       }
+      if(!mimeType) mimeType = 'video/webm';
+      var isMP4 = mimeType.startsWith('video/mp4');
+      var fileExt = isMP4 ? 'mp4' : 'webm';
+      var fileName = 'flipbook.' + fileExt;
 
       var recorder = new MediaRecorder(stream, {
         mimeType: mimeType,
@@ -853,9 +871,41 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
 
       var blob = new Blob(chunks, {type: mimeType});
       var url = URL.createObjectURL(blob);
+      lastBlob = blob;
+      lastMimeType = mimeType;
 
       resultVideo.src = url;
       downloadLink.href = url;
+      downloadLink.setAttribute('download', fileName);
+
+      // Mobile: show share button, hide download if iOS
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var canShare = navigator.share && navigator.canShare;
+
+      if(isMobile && canShare){
+        // Test if file sharing is supported
+        var testFile = new File([blob], fileName, {type: mimeType});
+        var shareData = {files: [testFile]};
+        if(navigator.canShare(shareData)){
+          btnShare.style.display = 'inline-flex';
+          if(isIOS){
+            downloadLink.style.display = 'none';
+            saveNote.textContent = '「共有・保存」→「ビデオを保存」でカメラロールに保存できます';
+            saveNote.style.display = 'block';
+          }
+        } else {
+          btnShare.style.display = 'none';
+          if(isIOS){
+            saveNote.textContent = '動画を長押し→「リンク先のファイルをダウンロード」で保存できます';
+            saveNote.style.display = 'block';
+          }
+        }
+      } else {
+        btnShare.style.display = 'none';
+        saveNote.style.display = 'none';
+      }
+
       resultCard.classList.add('show');
       resultCard.scrollIntoView({behavior:'smooth'});
 
@@ -869,8 +919,25 @@ label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6
     }
   });
 
+  // Share button for mobile
+  btnShare.addEventListener('click', async function(){
+    if(!lastBlob) return;
+    try {
+      var ext = lastMimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
+      var file = new File([lastBlob], 'flipbook.' + ext, {type: lastMimeType});
+      await navigator.share({files: [file]});
+    } catch(err){
+      if(err.name !== 'AbortError'){
+        alert('共有に失敗しました。動画を長押しして保存してください。');
+      }
+    }
+  });
+
   btnRetry.addEventListener('click', function(){
     resultCard.classList.remove('show');
+    btnShare.style.display = 'none';
+    saveNote.style.display = 'none';
+    downloadLink.style.display = 'inline-flex';
     stepEdit.scrollIntoView({behavior:'smooth'});
   });
 

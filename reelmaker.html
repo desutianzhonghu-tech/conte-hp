@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Reel Maker - conte.jpeg</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN",sans-serif;background:#faf9f7;color:#3d2f28;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.header{text-align:center;padding:20px 16px 12px;border-bottom:1px solid #e8e2dc;background:#fff}
+.header h1{font-size:20px;font-weight:300;color:#3d2f28;letter-spacing:1px}
+.header .sub{font-size:11px;color:#6b5d54;margin-top:2px;font-weight:300}
+.main{max-width:640px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid #e8e2dc;border-radius:12px;padding:20px;margin-bottom:16px}
+h2{font-size:16px;font-weight:500;margin-bottom:14px;color:#3d2f28}
+label{display:block;font-size:13px;font-weight:500;color:#6b5d54;margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;min-height:44px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#3d2f28;color:#fff}
+.btn-primary:hover{background:#5a4a42}
+.btn-secondary{background:#f0ebe5;color:#3d2f28}
+.btn-secondary:hover{background:#e8e2dc}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.flipbook-drop{border:2px dashed #e8e2dc;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;color:#6b5d54;font-size:14px;transition:border-color .2s}
+.flipbook-drop:hover,.flipbook-drop.dragover{border-color:#6b5d54}
+.flipbook-drop .icon{font-size:36px;opacity:.4;margin-bottom:8px}
+.flipbook-drop .hint{margin-top:6px;font-size:12px;color:#999}
+
+.preview-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.reel-thumb{position:relative;cursor:grab;border-radius:6px;border:2px solid transparent;transition:border-color .2s,opacity .2s}
+.reel-thumb:hover{border-color:#6b5d54}
+.reel-thumb.dragging{opacity:.4}
+.reel-thumb.drag-over{border-color:#3d2f28;background:#f0ebe5}
+.reel-thumb img{width:72px;height:72px;object-fit:cover;border-radius:4px;pointer-events:none;display:block}
+.reel-thumb .num{position:absolute;bottom:2px;right:4px;font-size:10px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none}
+.file-count{font-size:13px;color:#6b5d54;margin-top:10px}
+.sort-hint{font-size:11px;color:#999;margin-top:6px}
+
+.edit-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid #e8e2dc;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.edit-tab{padding:10px 14px;border:none;background:none;font-size:13px;font-weight:500;color:#6b5d54;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:44px;transition:color .2s,border-color .2s}
+.edit-tab:hover{color:#3d2f28}
+.edit-tab.active{color:#3d2f28;border-bottom-color:#3d2f28}
+.edit-panel{display:none;padding-top:4px}
+.edit-panel.active{display:block}
+
+.opt-grid{display:flex;gap:8px;flex-wrap:wrap}
+.opt-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:2px solid #e8e2dc;border-radius:10px;background:#fff;cursor:pointer;font-size:12px;color:#6b5d54;min-width:72px;min-height:44px;transition:border-color .2s}
+.opt-btn:hover{border-color:#6b5d54}
+.opt-btn.active{border-color:#3d2f28;color:#3d2f28;font-weight:500}
+.opt-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:14px;background:#f0ebe5;border-radius:8px;color:#3d2f28}
+.size-icon{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:#f0ebe5;border-radius:4px;border:1px solid #e8e2dc;color:#3d2f28}
+
+.gen-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid #e8e2dc;border-top-color:#3d2f28;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{display:none;align-items:center;gap:10px;color:#6b5d54;font-size:13px}
+.loading.show{display:flex}
+
+.progress-bar{width:100%;height:6px;background:#e8e2dc;border-radius:3px;margin-top:10px;overflow:hidden;display:none}
+.progress-bar.show{display:block}
+.progress-fill{height:100%;background:#3d2f28;border-radius:3px;transition:width .2s}
+
+.result{display:none}
+.result.show{display:block}
+.result video{width:100%;max-height:500px;border-radius:8px;background:#000}
+.result-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.result-actions a{text-decoration:none}
+
+@media(max-width:480px){
+  .main{padding:12px}
+  .card{padding:16px}
+  .reel-thumb img{width:60px;height:60px}
+  .opt-btn{min-width:64px;padding:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>conte.jpeg</h1>
+  <div class="sub">Reel Maker</div>
+</div>
+
+<div class="main">
+
+<!-- Step 1: Upload -->
+<div class="card" id="stepUpload">
+  <h2>1. 写真を選択</h2>
+  <div class="flipbook-drop" id="dropArea">
+    <div class="icon">&#127909;</div>
+    <div>タップして選択 または ドラッグ&ドロップ</div>
+    <div class="hint">JPG / PNG 対応 ・ 2枚以上</div>
+    <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+  </div>
+  <div class="file-count" id="fileCount"></div>
+  <div id="previewArea"></div>
+</div>
+
+<!-- Step 2: Settings -->
+<div class="card" id="stepSettings" style="display:none">
+  <h2>2. 設定</h2>
+
+  <div class="edit-tabs">
+    <button class="edit-tab active" data-tab="aspect">アスペクト比</button>
+    <button class="edit-tab" data-tab="effect">エフェクト</button>
+    <button class="edit-tab" data-tab="duration">表示秒数</button>
+  </div>
+
+  <!-- Aspect -->
+  <div class="edit-panel active" id="panel-aspect">
+    <label>動画のアスペクト比</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-group="aspect" data-value="9:16">
+        <div class="size-icon" style="width:28px;height:44px"></div>
+        <span>9:16 リール</span>
+      </button>
+      <button class="opt-btn" data-group="aspect" data-value="1:1">
+        <div class="size-icon" style="width:38px;height:38px"></div>
+        <span>1:1 フィード</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Effect -->
+  <div class="edit-panel" id="panel-effect">
+    <label>切り替えエフェクト</label>
+    <div class="opt-grid">
+      <button class="opt-btn active" data-group="effect" data-value="fade">
+        <div class="opt-icon">A~B</div>
+        <span>フェード</span>
+      </button>
+      <button class="opt-btn" data-group="effect" data-value="zoom">
+        <div class="opt-icon" style="font-size:20px">&#128269;</div>
+        <span>ズーム</span>
+      </button>
+      <button class="opt-btn" data-group="effect" data-value="slide">
+        <div class="opt-icon">&larr; &rarr;</div>
+        <span>スライド</span>
+      </button>
+      <button class="opt-btn" data-group="effect" data-value="none">
+        <div class="opt-icon">A|B</div>
+        <span>なし</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Duration -->
+  <div class="edit-panel" id="panel-duration">
+    <label>1枚あたりの表示秒数</label>
+    <div class="opt-grid">
+      <button class="opt-btn" data-group="duration" data-value="2">
+        <div class="opt-icon">2s</div>
+        <span>テンポ良く</span>
+      </button>
+      <button class="opt-btn active" data-group="duration" data-value="3">
+        <div class="opt-icon">3s</div>
+        <span>標準</span>
+      </button>
+      <button class="opt-btn" data-group="duration" data-value="4">
+        <div class="opt-icon">4s</div>
+        <span>じっくり</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Generate -->
+<div class="card" id="stepGenerate" style="display:none">
+  <div class="gen-row">
+    <button class="btn btn-primary" id="btnGenerate">動画を生成する</button>
+    <div class="loading" id="loadingOverlay">
+      <div class="spinner"></div>
+      <span id="loadingText">動画を生成中...</span>
+    </div>
+  </div>
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- Result -->
+<div class="card result" id="resultCard">
+  <h2>完成</h2>
+  <video id="resultVideo" controls loop playsinline></video>
+  <div class="result-actions">
+    <a id="downloadLink" class="btn btn-primary" download="reel.webm">ダウンロード</a>
+    <button class="btn btn-secondary" id="btnRetry">設定を変えてもう一度</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var dropArea = document.getElementById('dropArea');
+  var fileInput = document.getElementById('fileInput');
+  var fileCount = document.getElementById('fileCount');
+  var previewArea = document.getElementById('previewArea');
+  var stepSettings = document.getElementById('stepSettings');
+  var stepGenerate = document.getElementById('stepGenerate');
+  var btnGenerate = document.getElementById('btnGenerate');
+  var loadingOverlay = document.getElementById('loadingOverlay');
+  var loadingText = document.getElementById('loadingText');
+  var progressBar = document.getElementById('progressBar');
+  var progressFill = document.getElementById('progressFill');
+  var resultCard = document.getElementById('resultCard');
+  var resultVideo = document.getElementById('resultVideo');
+  var downloadLink = document.getElementById('downloadLink');
+  var btnRetry = document.getElementById('btnRetry');
+
+  var selectedFiles = [];
+  var settings = { aspect: '9:16', effect: 'fade', duration: 3 };
+
+  // --- File Selection ---
+  dropArea.addEventListener('click', function(){ fileInput.click(); });
+  dropArea.addEventListener('dragover', function(e){ e.preventDefault(); dropArea.classList.add('dragover'); });
+  dropArea.addEventListener('dragleave', function(){ dropArea.classList.remove('dragover'); });
+  dropArea.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    var files = Array.from(e.dataTransfer.files).filter(function(f){ return f.type.startsWith('image/'); });
+    if(files.length > 0){ selectedFiles = files; onFilesSelected(); }
+  });
+  fileInput.addEventListener('change', function(){
+    var files = Array.from(fileInput.files).filter(function(f){ return f.type.startsWith('image/'); });
+    if(files.length > 0){ selectedFiles = files; onFilesSelected(); }
+  });
+
+  function onFilesSelected(){
+    fileCount.textContent = selectedFiles.length + ' 枚の写真を選択中';
+    stepSettings.style.display = 'block';
+    stepGenerate.style.display = 'block';
+    renderPreview();
+  }
+
+  function renderPreview(){
+    if(!selectedFiles.length){ previewArea.innerHTML=''; return; }
+    var html = '<div class="preview-list" id="sortableList">';
+    for(var i=0;i<selectedFiles.length;i++){
+      html += '<div class="reel-thumb" draggable="true" data-index="'+i+'">';
+      html += '<img data-index="'+i+'">';
+      html += '<div class="num">'+(i+1)+'</div></div>';
+    }
+    html += '</div><div class="sort-hint">ドラッグで並び替え可能</div>';
+    previewArea.innerHTML = html;
+
+    previewArea.querySelectorAll('img[data-index]').forEach(function(img){
+      var idx = parseInt(img.getAttribute('data-index'));
+      var reader = new FileReader();
+      reader.onload = function(e){ img.src = e.target.result; };
+      reader.readAsDataURL(selectedFiles[idx]);
+    });
+    initSortable();
+  }
+
+  function initSortable(){
+    var list = document.getElementById('sortableList');
+    if(!list) return;
+    var dragSrc = null;
+    list.querySelectorAll('.reel-thumb').forEach(function(item){
+      item.addEventListener('dragstart', function(e){
+        dragSrc = this; this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', function(){
+        this.classList.remove('dragging');
+        list.querySelectorAll('.reel-thumb').forEach(function(el){ el.classList.remove('drag-over'); });
+      });
+      item.addEventListener('dragover', function(e){
+        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        this.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+      item.addEventListener('drop', function(e){
+        e.preventDefault(); this.classList.remove('drag-over');
+        if(dragSrc === this) return;
+        var fromIdx = parseInt(dragSrc.getAttribute('data-index'));
+        var toIdx = parseInt(this.getAttribute('data-index'));
+        var moved = selectedFiles.splice(fromIdx, 1)[0];
+        selectedFiles.splice(toIdx, 0, moved);
+        renderPreview();
+      });
+      // Touch reorder
+      item.addEventListener('touchstart', function(){ dragSrc = this; }, {passive:true});
+      item.addEventListener('touchmove', function(e){ e.preventDefault(); }, {passive:false});
+      item.addEventListener('touchend', function(e){
+        if(!dragSrc) return;
+        var touch = e.changedTouches[0];
+        var el = document.elementFromPoint(touch.clientX, touch.clientY);
+        if(el){
+          var target = el.closest('.reel-thumb');
+          if(target && target !== dragSrc){
+            var fromIdx = parseInt(dragSrc.getAttribute('data-index'));
+            var toIdx = parseInt(target.getAttribute('data-index'));
+            var moved = selectedFiles.splice(fromIdx, 1)[0];
+            selectedFiles.splice(toIdx, 0, moved);
+            renderPreview();
+          }
+        }
+        dragSrc = null;
+      });
+    });
+  }
+
+  // --- Tabs ---
+  document.querySelectorAll('.edit-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.edit-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.edit-panel').forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // --- Option Buttons ---
+  document.querySelectorAll('.opt-btn[data-group]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var group = btn.dataset.group;
+      document.querySelectorAll('.opt-btn[data-group="'+group+'"]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      settings[group] = btn.dataset.value;
+    });
+  });
+
+  // --- Load images ---
+  function loadImages(files){
+    return Promise.all(files.map(function(file){
+      return new Promise(function(resolve, reject){
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function(){ URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('画像読み込み失敗')); };
+        img.src = url;
+      });
+    }));
+  }
+
+  // --- Fit image to canvas (cover) ---
+  function fitCover(ctx, img, w, h){
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale = Math.max(w/iw, h/ih);
+    var nw = Math.floor(iw*scale), nh = Math.floor(ih*scale);
+    var ox = Math.floor((w-nw)/2), oy = Math.floor((h-nh)/2);
+    ctx.drawImage(img, ox, oy, nw, nh);
+  }
+
+  // --- Zoom helper ---
+  function drawZoomed(ctx, img, zoom, w, h){
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale = Math.max(w/iw, h/ih);
+    var nw = Math.floor(iw*scale*zoom), nh = Math.floor(ih*scale*zoom);
+    var ox = Math.floor((w-nw)/2), oy = Math.floor((h-nh)/2);
+    ctx.drawImage(img, ox, oy, nw, nh);
+  }
+
+  // --- Generate ---
+  btnGenerate.addEventListener('click', async function(){
+    if(selectedFiles.length < 2){
+      alert('2枚以上の画像を選択してください');
+      return;
+    }
+
+    btnGenerate.disabled = true;
+    loadingOverlay.classList.add('show');
+    progressBar.classList.add('show');
+    progressFill.style.width = '0%';
+    resultCard.classList.remove('show');
+
+    try {
+      loadingText.textContent = '画像を読み込み中...';
+      var images = await loadImages(selectedFiles);
+
+      // Canvas dimensions
+      var width, height;
+      if(settings.aspect === '1:1'){ width = 1080; height = 1080; }
+      else { width = 1080; height = 1920; }
+
+      var FPS = 30;
+      var duration = parseInt(settings.duration);
+      var TRANSITION_FRAMES = 24; // 0.8 sec
+      var HOLD_FRAMES = duration * FPS - TRANSITION_FRAMES;
+      if(HOLD_FRAMES < FPS) HOLD_FRAMES = FPS;
+
+      var effect = settings.effect;
+
+      // Pre-render static frames to canvases
+      loadingText.textContent = '画像を処理中...';
+      var staticFrames = [];
+      for(var i=0;i<images.length;i++){
+        var c = document.createElement('canvas');
+        c.width = width; c.height = height;
+        var cx = c.getContext('2d');
+        cx.fillStyle = '#000';
+        cx.fillRect(0, 0, width, height);
+        fitCover(cx, images[i], width, height);
+        staticFrames.push(c);
+        progressFill.style.width = Math.floor((i+1)/images.length*15) + '%';
+      }
+
+      // Build frame list
+      var frameList = [];
+      for(var i=0;i<images.length;i++){
+        var isLast = (i === images.length - 1);
+
+        if(effect === 'zoom'){
+          for(var t=0;t<HOLD_FRAMES;t++){
+            var progress = t / Math.max(HOLD_FRAMES-1, 1);
+            frameList.push({type:'zoom', index:i, zoom: 1.0 + 0.08*progress});
+          }
+        } else {
+          for(var t=0;t<HOLD_FRAMES;t++){
+            frameList.push({type:'static', index:i});
+          }
+        }
+
+        if(!isLast){
+          for(var t=0;t<TRANSITION_FRAMES;t++){
+            var alpha = (t+1)/(TRANSITION_FRAMES+1);
+            if(effect === 'fade'){
+              frameList.push({type:'fade', from:i, to:i+1, alpha:alpha});
+            } else if(effect === 'zoom'){
+              var zoomOut = 1.08 - 0.08*alpha;
+              frameList.push({type:'zoom_fade', from:i, to:i+1, alpha:alpha, zoom:zoomOut});
+            } else if(effect === 'slide'){
+              frameList.push({type:'slide', from:i, to:i+1, alpha:alpha});
+            }
+            // 'none': no transition frames
+          }
+        }
+      }
+
+      loadingText.textContent = '動画を生成中...';
+
+      // Setup recording canvas
+      var recCanvas = document.createElement('canvas');
+      recCanvas.width = width; recCanvas.height = height;
+      var recCtx = recCanvas.getContext('2d');
+
+      var stream = recCanvas.captureStream(0);
+      var track = stream.getVideoTracks()[0];
+
+      var mimeType = 'video/webm;codecs=vp9';
+      if(!MediaRecorder.isTypeSupported(mimeType)){
+        mimeType = 'video/webm;codecs=vp8';
+        if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+      }
+
+      var recorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 8000000 });
+      var chunks = [];
+      recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
+      var recordDone = new Promise(function(resolve){ recorder.onstop = function(){ resolve(); }; });
+      recorder.start();
+
+      var frameInterval = 1000 / FPS;
+      var totalFrames = frameList.length;
+
+      for(var fi=0;fi<totalFrames;fi++){
+        var f = frameList[fi];
+
+        if(f.type === 'static'){
+          recCtx.drawImage(staticFrames[f.index], 0, 0);
+        } else if(f.type === 'zoom'){
+          recCtx.fillStyle = '#000';
+          recCtx.fillRect(0, 0, width, height);
+          drawZoomed(recCtx, images[f.index], f.zoom, width, height);
+        } else if(f.type === 'fade'){
+          recCtx.globalAlpha = 1;
+          recCtx.drawImage(staticFrames[f.from], 0, 0);
+          recCtx.globalAlpha = f.alpha;
+          recCtx.drawImage(staticFrames[f.to], 0, 0);
+          recCtx.globalAlpha = 1;
+        } else if(f.type === 'zoom_fade'){
+          recCtx.globalAlpha = 1;
+          recCtx.fillStyle = '#000';
+          recCtx.fillRect(0, 0, width, height);
+          recCtx.globalAlpha = 1 - f.alpha;
+          drawZoomed(recCtx, images[f.from], f.zoom, width, height);
+          recCtx.globalAlpha = f.alpha;
+          recCtx.drawImage(staticFrames[f.to], 0, 0);
+          recCtx.globalAlpha = 1;
+        } else if(f.type === 'slide'){
+          var offset = Math.floor(width * f.alpha);
+          recCtx.fillStyle = '#000';
+          recCtx.fillRect(0, 0, width, height);
+          // Current slides left
+          recCtx.drawImage(staticFrames[f.from], -offset, 0);
+          // Next slides in from right
+          recCtx.drawImage(staticFrames[f.to], width - offset, 0);
+        }
+
+        if(track.requestFrame) track.requestFrame();
+
+        // Progress
+        if(fi % 10 === 0 || fi === totalFrames-1){
+          var pct = 15 + Math.floor((fi+1)/totalFrames*80);
+          progressFill.style.width = pct + '%';
+          loadingText.textContent = '動画を生成中... ' + Math.floor((fi+1)/totalFrames*100) + '%';
+        }
+
+        await new Promise(function(r){ setTimeout(r, frameInterval); });
+      }
+
+      recorder.stop();
+      await recordDone;
+
+      progressFill.style.width = '100%';
+      loadingText.textContent = '完了!';
+
+      var blob = new Blob(chunks, {type: mimeType});
+      var url = URL.createObjectURL(blob);
+      resultVideo.src = url;
+      downloadLink.href = url;
+      resultCard.classList.add('show');
+      resultCard.scrollIntoView({behavior:'smooth'});
+
+    } catch(err){
+      alert('エラー: ' + err.message);
+      console.error(err);
+    } finally {
+      btnGenerate.disabled = false;
+      loadingOverlay.classList.remove('show');
+      progressBar.classList.remove('show');
+    }
+  });
+
+  btnRetry.addEventListener('click', function(){
+    resultCard.classList.remove('show');
+    stepSettings.scrollIntoView({behavior:'smooth'});
+  });
+
+})();
+</script>
+</body>
+</html>

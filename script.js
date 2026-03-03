@@ -119,7 +119,6 @@ function initModal() {
     const data = getItemData(item);
     const buyHref = data.buyLink || item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
     const priceText = item.querySelector('.collection-price')?.textContent || '';
-    const isSoldOut = item.dataset.soldOut === 'true';
 
     const img2 = item.querySelector('.collection-img-2');
     modalImg.src = (img2 && img2.src) ? img2.src : item.querySelector('.collection-img-1').src;
@@ -132,24 +131,31 @@ function initModal() {
     modalPrice.textContent = priceText;
     modalPrice.style.display = priceText ? '' : 'none';
 
-    // Set buy button or sold out
+    // Set buy button or status
+    const isSoldOut = item.dataset.soldOut === 'true';
+    const isComingSoon = item.dataset.comingSoon === 'true';
+    const releaseDate = item.dataset.releaseDate || '';
+
+    // Get or create status element
+    let statusEl = modal.querySelector('.modal-status');
+    if (!statusEl) {
+      statusEl = document.createElement('span');
+      statusEl.className = 'modal-status';
+      modalBuyBtn.after(statusEl);
+    }
+
     if (isSoldOut) {
       modalBuyBtn.style.display = 'none';
-      // Show sold out text if not already present
-      let soldEl = modal.querySelector('.modal-sold-out');
-      if (!soldEl) {
-        soldEl = document.createElement('span');
-        soldEl.className = 'modal-sold-out';
-        soldEl.textContent = 'sold out';
-        soldEl.style.cssText = 'font-family:var(--font-en);font-size:0.8rem;font-weight:300;letter-spacing:0.3em;text-transform:uppercase;color:var(--taupe);';
-        modalBuyBtn.after(soldEl);
-      }
-      soldEl.style.display = '';
+      statusEl.innerHTML = 'sold out';
+      statusEl.style.display = '';
+    } else if (isComingSoon) {
+      modalBuyBtn.style.display = 'none';
+      statusEl.innerHTML = 'coming soon' + (releaseDate ? '<span class="release-date">' + releaseDate + '</span>' : '');
+      statusEl.style.display = '';
     } else {
       modalBuyBtn.style.display = '';
       modalBuyBtn.href = buyHref;
-      const soldEl = modal.querySelector('.modal-sold-out');
-      if (soldEl) soldEl.style.display = 'none';
+      statusEl.style.display = 'none';
     }
 
     modal.classList.add('active');
@@ -649,6 +655,31 @@ function initCollectionInfo() {
     const price = priceEl ? priceEl.textContent : '';
     const buyLink = item.querySelector('.collection-buy')?.href || 'https://conte.base.ec';
     const isSoldOut = item.dataset.soldOut === 'true';
+    const isComingSoon = item.dataset.comingSoon === 'true';
+    const releaseDate = item.dataset.releaseDate || '';
+
+    // Add image badge overlay for sold-out or coming-soon
+    if (isSoldOut) {
+      const badge = document.createElement('div');
+      badge.className = 'collection-status-badge sold-out';
+      badge.innerHTML = '<span class="badge-line"></span> sold out <span class="badge-line"></span>';
+      item.style.position = 'relative';
+      item.appendChild(badge);
+    } else if (isComingSoon) {
+      const badge = document.createElement('div');
+      badge.className = 'collection-status-badge coming-soon';
+      badge.innerHTML = '<span class="badge-line"></span> coming soon <span class="badge-line"></span>';
+      item.style.position = 'relative';
+      item.appendChild(badge);
+    }
+
+    // Build status HTML for overlay/bottom bar
+    let statusHtml = '';
+    if (isSoldOut) {
+      statusHtml = '<span class="collection-sold-out">sold out</span>';
+    } else if (isComingSoon) {
+      statusHtml = '<span class="collection-coming-soon">coming soon' + (releaseDate ? '<span class="release-date">' + releaseDate + '</span>' : '') + '</span>';
+    }
 
     if (isMobile || isTouch) {
       // Mobile: create auto-overlay (always visible at bottom)
@@ -656,8 +687,8 @@ function initCollectionInfo() {
       autoOverlay.className = 'collection-auto-overlay';
       let html = '<span class="auto-name">' + nameJa + '</span>';
       html += '<span class="auto-price">' + price + '</span>';
-      if (isSoldOut) {
-        html += '<span class="collection-sold-out">sold out</span>';
+      if (isSoldOut || isComingSoon) {
+        html += statusHtml;
       } else {
         html += '<a class="auto-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
       }
@@ -669,8 +700,8 @@ function initCollectionInfo() {
       bottom.className = 'collection-item-bottom';
       let html = '<span class="bottom-name">' + nameJa + '</span>';
       html += '<span class="bottom-price">' + price + '</span>';
-      if (isSoldOut) {
-        html += '<span class="collection-sold-out">sold out</span>';
+      if (isSoldOut || isComingSoon) {
+        html += statusHtml;
       } else {
         html += '<a class="bottom-buy" href="' + buyLink + '" target="_blank" rel="noopener">購入 →</a>';
       }
